@@ -1,0 +1,31 @@
+
+@import "tailwindcss";
+
+.custom-sidebar-menu .ant-menu-item {
+	transition: background 0.2s;
+}
+.custom-sidebar-menu .ant-menu-item:hover  {
+	background: rgba(246, 95, 66, 0.12) !important; 
+}
+.custom-sidebar-menu .ant-menu-item-selected {
+	background: rgba(246, 95, 66, 0.25) !important;
+	color: #f65f42 !important;
+}
+.custom-sidebar-menu .ant-menu-item .ant-menu-item-icon {
+	font-size: 22px !important;
+}
+.custom-sidebar-menu .ant-menu-title-content {
+	font-size: 18px !important;
+}
+
+/* @theme {
+	--color-primary: #f65f42;
+	--color-secondary: #14aaff;
+	--color-gray: #838181;
+	--color-success: #13c925;
+	--color-warning: #ffc107;
+	--color-danger: #dc3545;
+	--color-info: #17a2b8;
+	--color-light: #f8f9fa;
+	--color-dark: #343a40;
+} */
