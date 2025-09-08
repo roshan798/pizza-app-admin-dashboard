@@ -1,11 +1,10 @@
-
-@import "tailwindcss";
+@import 'tailwindcss';
 
 .custom-sidebar-menu .ant-menu-item {
 	transition: background 0.2s;
 }
-.custom-sidebar-menu .ant-menu-item:hover  {
-	background: rgba(246, 95, 66, 0.12) !important; 
+.custom-sidebar-menu .ant-menu-item:hover {
+	background: rgba(246, 95, 66, 0.12) !important;
 }
 .custom-sidebar-menu .ant-menu-item-selected {
 	background: rgba(246, 95, 66, 0.25) !important;
