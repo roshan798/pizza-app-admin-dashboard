@@ -11,5 +11,14 @@ export type ErrorResponse = {
 	message: string;
 	errors?: ServerError[];
 };
+export interface ApiError {
+	response?: {
+		data?: {
+			errors?: ServerError[];
+			message?: string;
+		};
+	};
+	message?: string;
+}
 
 export type Roles = 'manager' | 'admin' | 'customer';

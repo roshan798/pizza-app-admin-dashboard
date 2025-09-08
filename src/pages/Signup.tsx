@@ -7,9 +7,11 @@ import {
 } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { signup } from '../http/auth';
-import type { Roles } from '../types';
+import type { ApiError, Roles } from '../types';
 import type { SignupPayload } from '../types/Payloads';
 import { useNotification } from '../hooks/useNotification';
+import { useMutation } from '@tanstack/react-query';
+import { mapServerFormErrors } from '../utils';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -21,19 +23,39 @@ const RolesOptions = [
 ];
 
 const Signup = () => {
-	const [form] = Form.useForm();
+	const [form] = Form.useForm<SignupPayload>();
 	const navigate = useNavigate();
 	const notify = useNotification();
-	const handleSignup = async (values: SignupPayload) => {
-		try {
-			const signupPayload = { ...values, role: values.role as Roles };
-			await signup(signupPayload);
-			notify('success', 'Account created succesfully, Please login.');
+
+	const { mutate, isPending } = useMutation({
+		mutationFn: (payload: SignupPayload) => signup(payload),
+		onSuccess: () => {
+			notify('success', 'Account created successfully. Please login.');
 			navigate('/login');
-		} catch (err) {
-			const error = err as unknown as Error;
-			notify('error', error.message || 'Something bad happenned');
-		}
+		},
+		onError: (error: unknown) => {
+			const apiError = error as ApiError;
+			const fieldErrors = mapServerFormErrors(
+				apiError.response?.data?.errors
+			);
+
+			if (fieldErrors.general) {
+				notify('error', fieldErrors.general);
+			} else {
+				Object.entries(fieldErrors).forEach(([field, msg]) => {
+					form.setFields([
+						{
+							name: field as keyof SignupPayload,
+							errors: [msg],
+						},
+					]);
+				});
+			}
+		},
+	});
+
+	const handleSignup = (values: SignupPayload) => {
+		mutate({ ...values, role: values.role as Roles });
 	};
 
 	return (
@@ -65,8 +87,8 @@ const Signup = () => {
 				>
 					Sign Up
 				</Title>
+
 				<Form.Item
-					// label="First Name"
 					name="firstName"
 					rules={[
 						{ required: true, message: 'First name is required' },
@@ -77,8 +99,8 @@ const Signup = () => {
 						prefix={<UserOutlined style={{ color: '#f65f42' }} />}
 					/>
 				</Form.Item>
+
 				<Form.Item
-					// label="Last Name"
 					name="lastName"
 					rules={[
 						{ required: true, message: 'Last name is required' },
@@ -89,8 +111,8 @@ const Signup = () => {
 						prefix={<UserOutlined style={{ color: '#f65f42' }} />}
 					/>
 				</Form.Item>
+
 				<Form.Item
-					// label="Email"
 					name="email"
 					rules={[
 						{ required: true, message: 'Please input your email!' },
@@ -103,8 +125,8 @@ const Signup = () => {
 						prefix={<MailOutlined style={{ color: '#f65f42' }} />}
 					/>
 				</Form.Item>
+
 				<Form.Item
-					// label="Password"
 					name="password"
 					rules={[
 						{
@@ -122,8 +144,8 @@ const Signup = () => {
 						prefix={<LockOutlined style={{ color: '#f65f42' }} />}
 					/>
 				</Form.Item>
+
 				<Form.Item
-					// label="Role"
 					name="role"
 					rules={[{ required: true, message: 'Role is required' }]}
 				>
@@ -131,7 +153,6 @@ const Signup = () => {
 						suffixIcon={
 							<TeamOutlined style={{ color: '#f65f42' }} />
 						}
-						style={{ color: '#f65f42' }}
 					>
 						{RolesOptions.map((option) => (
 							<Option key={option.value} value={option.value}>
@@ -140,12 +161,14 @@ const Signup = () => {
 						))}
 					</Select>
 				</Form.Item>
+
 				<Form.Item>
 					<Button
 						type="primary"
 						htmlType="submit"
 						block
 						icon={<UserOutlined />}
+						loading={isPending} // <-- React Query handles loading state
 						style={{
 							background: '#f65f42',
 							borderColor: '#f65f42',
@@ -154,6 +177,7 @@ const Signup = () => {
 						Create Account
 					</Button>
 				</Form.Item>
+
 				<div style={{ textAlign: 'center' }}>
 					Already have an account? <Link to="/login">Login</Link>
 				</div>

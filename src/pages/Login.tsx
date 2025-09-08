@@ -4,24 +4,49 @@ import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../http/auth';
 import { useUserStore } from '../store/userStore';
 import { useNotification } from '../hooks/useNotification';
+import { useMutation } from '@tanstack/react-query';
+import { mapServerFormErrors } from '../utils';
+import type { ApiError } from '../types';
 
 const { Title } = Typography;
 
 const Login = () => {
 	const [form] = Form.useForm();
 	const { setId } = useUserStore();
-	const navigate = useNavigate();
 	const notify = useNotification();
-	const handleLogin = async (values: { email: string; password: string }) => {
-		try {
-			const response = await login(values);
+	const navigate = useNavigate();
+
+	const mutation = useMutation({
+		mutationFn: login,
+		onSuccess: (response) => {
 			setId(response.data.id);
-			notify('success', 'Login succesfull');
+			notify('success', 'Login successful');
 			navigate('/');
-		} catch (err) {
-			const error = err as unknown as Error;
-			notify('error', error.message || 'Something bad happenned');
-		}
+		},
+		onError: (error: unknown) => {
+			const apiError = error as ApiError;
+
+			const fieldErrors = mapServerFormErrors(
+				apiError.response?.data?.errors
+			);
+
+			if (fieldErrors.general) {
+				notify('error', fieldErrors.general);
+			} else {
+				Object.entries(fieldErrors).forEach(([field, msg]) => {
+					form.setFields([
+						{
+							name: field,
+							errors: [msg],
+						},
+					]);
+				});
+			}
+		},
+	});
+
+	const handleLogin = (values: { email: string; password: string }) => {
+		mutation.mutate(values);
 	};
 
 	return (
@@ -52,8 +77,8 @@ const Login = () => {
 				>
 					Login
 				</Title>
+
 				<Form.Item
-					// label="Email"
 					name="email"
 					rules={[
 						{ required: true, message: 'Please input your email!' },
@@ -66,8 +91,8 @@ const Login = () => {
 						prefix={<MailOutlined style={{ color: '#f65f42' }} />}
 					/>
 				</Form.Item>
+
 				<Form.Item
-					// label="Password"
 					name="password"
 					rules={[
 						{
@@ -85,20 +110,23 @@ const Login = () => {
 						prefix={<LockOutlined style={{ color: '#f65f42' }} />}
 					/>
 				</Form.Item>
+
 				<Form.Item>
 					<Button
 						type="primary"
 						htmlType="submit"
 						block
 						icon={<LoginOutlined />}
+						loading={mutation.isPending}
 						style={{
 							background: '#f65f42',
 							borderColor: '#f65f42',
 						}}
 					>
-						Login
+						{mutation.isPending ? 'Logging in...' : 'Login'}
 					</Button>
 				</Form.Item>
+
 				<div style={{ textAlign: 'center' }}>
 					Don&apos;t have an account?{' '}
 					<Link to="/signup">Sign up</Link>
