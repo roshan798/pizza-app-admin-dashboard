@@ -5,6 +5,7 @@ const CONFIG = {
 		signup: '/register',
 		self: '/self',
 		logout: '/logout',
+		refresh: '/refresh',
 	},
 };
 export default CONFIG;
