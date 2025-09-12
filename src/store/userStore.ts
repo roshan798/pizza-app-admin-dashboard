@@ -5,16 +5,12 @@ export const useUserStore = create<UserState>((set) => ({
 	user: null,
 	id: null,
 	setUser: (user) => {
-		console.log('[USER STORE] - setting user : ', user);
 		return set({ user });
 	},
 	setId: (id) => {
-		console.log('[USER STORE] - setting id : ', id);
 		return set({ id });
 	},
 	logout() {
-		console.log('[USER STORE] - Logout');
-
 		return set({
 			id: null,
 			user: null,

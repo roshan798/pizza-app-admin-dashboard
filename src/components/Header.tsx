@@ -1,29 +1,50 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Layout, Menu, Button, Avatar } from 'antd';
 import { UserOutlined, LogoutOutlined, LoginOutlined } from '@ant-design/icons';
-import { logout as logoutFromServer } from '../http/auth';
+import { logout as logoutFromServer, self } from '../http/auth';
 import { useUserStore } from '../store/userStore';
 import { useNotification } from '../hooks/useNotification';
-
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 const { Header: AntHeader } = Layout;
 
 const Header = () => {
+	const queryClient = useQueryClient();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const notify = useNotification();
 	const isLoginPage = location.pathname === '/login';
 	const isSignupPage = location.pathname === '/signup';
-	const { logout } = useUserStore();
+	const { logout, setUser, user } = useUserStore();
+	const { data, error } = useQuery({
+		queryKey: ['self'],
+		queryFn: self,
+		staleTime: 1000 * 60 * 5,
+		retry: false,
+		enabled: !user,
+	});
+	useEffect(() => {
+		if (data) {
+			setUser(data.data.user);
+		}
+	}, [data, setUser]);
+
+	useEffect(() => {
+		if (error) {
+			console.error('Failed to fetch user', error);
+		}
+	}, [error]);
 	const handleLogout = async () => {
 		try {
-			await logoutFromServer();
-			notify('success', 'Logout succesfull');
-		} catch (error) {
-			console.error(error);
-			notify('error', 'Something bad happend!');
-		} finally {
+			const res = await logoutFromServer();
+			queryClient.removeQueries({ queryKey: ['self'] });
+			console.log(res);
 			logout();
+			notify('success', 'Logout successful');
 			navigate('/login');
+		} catch (err) {
+			console.error(err);
+			notify('error', 'Something bad happened!');
 		}
 	};
 

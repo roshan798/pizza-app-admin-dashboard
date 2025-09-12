@@ -1,8 +1,8 @@
 import axios from 'axios';
 import CONFIG from '../config.ts';
 
-export const auth = axios.create({
-	baseURL: CONFIG.auth.url,
+const api = axios.create({
+	baseURL: CONFIG.baseUrl,
 	headers: {
 		'Content-Type': 'application/json',
 		Accept: 'application/json',
@@ -10,7 +10,7 @@ export const auth = axios.create({
 	withCredentials: true,
 });
 
-auth.interceptors.response.use(
+api.interceptors.response.use(
 	(config) => {
 		return config;
 	},
@@ -24,13 +24,13 @@ auth.interceptors.response.use(
 			originalRequest._isRetry = true;
 			try {
 				await axios.post(
-					`${CONFIG.auth.url + CONFIG.auth.refresh}`,
-					{},
+					`${CONFIG.baseUrl + CONFIG.auth.refresh}`,
+					{}, // empty body
 					{
 						withCredentials: true,
 					}
 				);
-				return auth.request(originalRequest);
+				return api.request(originalRequest);
 			} catch (error) {
 				console.log('Inteceptor Error', error);
 			}
@@ -38,3 +38,5 @@ auth.interceptors.response.use(
 		throw error;
 	}
 );
+
+export default api;

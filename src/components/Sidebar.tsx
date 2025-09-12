@@ -12,7 +12,7 @@ import {
 const sidebarLinks = [
 	{ to: '/', label: 'Dashboard', icon: <HomeOutlined /> },
 	{ to: '/orders', label: 'Orders', icon: <ShoppingCartOutlined /> },
-	{ to: '/customers', label: 'Customers', icon: <UsergroupAddOutlined /> },
+	{ to: '/users', label: 'Users', icon: <UsergroupAddOutlined /> },
 	{ to: '/reports', label: 'Reports', icon: <BarChartOutlined /> },
 	{ to: '/settings', label: 'Settings', icon: <SettingOutlined /> },
 ];

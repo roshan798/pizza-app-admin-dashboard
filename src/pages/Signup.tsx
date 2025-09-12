@@ -35,9 +35,7 @@ const Signup = () => {
 		},
 		onError: (error: unknown) => {
 			const apiError = error as ApiError;
-			const fieldErrors = mapServerFormErrors(
-				apiError.response?.data?.errors
-			);
+			const fieldErrors = mapServerFormErrors(apiError.response?.data);
 
 			if (fieldErrors.general) {
 				notify('error', fieldErrors.general);

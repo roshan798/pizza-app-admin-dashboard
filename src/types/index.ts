@@ -22,3 +22,9 @@ export interface ApiError {
 }
 
 export type Roles = 'manager' | 'admin' | 'customer';
+
+// Generic type for success response
+export type SuccessResponse = {
+	success: boolean;
+	message: string;
+};

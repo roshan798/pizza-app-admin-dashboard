@@ -1,18 +1,27 @@
-@import 'tailwindcss';
+/* @import 'tailwindcss'; */
+@import 'antd/dist/reset.css';
+
+:root {
+	--color-primary: #f65f42;
+}
 
 .custom-sidebar-menu .ant-menu-item {
 	transition: background 0.2s;
 }
+
 .custom-sidebar-menu .ant-menu-item:hover {
 	background: rgba(246, 95, 66, 0.12) !important;
 }
+
 .custom-sidebar-menu .ant-menu-item-selected {
 	background: rgba(246, 95, 66, 0.25) !important;
 	color: #f65f42 !important;
 }
+
 .custom-sidebar-menu .ant-menu-item .ant-menu-item-icon {
 	font-size: 22px !important;
 }
+
 .custom-sidebar-menu .ant-menu-title-content {
 	font-size: 18px !important;
 }

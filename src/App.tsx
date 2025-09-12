@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminRoute from './routes/AdminRoute';
 import AuthRoute from './routes/AuthRoute';
+import Users from './pages/users/Users';
+import CreateOrUpdateUser from './pages/users/CreateOrUpdateUser';
 
 function App() {
 	return (
@@ -25,6 +27,15 @@ function App() {
 					<Route element={<MainLayout />}>
 						<Route path="/" element={<Home />} />
 						<Route path="/category" element={<Category />} />
+						<Route path="/users" element={<Users />} />
+						<Route
+							path="/users/create"
+							element={<CreateOrUpdateUser />}
+						/>
+						<Route
+							path="/users/edit/:userId"
+							element={<CreateOrUpdateUser />}
+						/>
 					</Route>
 				</Route>
 			</Routes>
