@@ -1,4 +1,4 @@
-import { Form, Input, Button, Typography } from 'antd';
+import { Form, Input, Button, Typography, Card, Row, Col, Space } from 'antd';
 import { MailOutlined, LockOutlined, LoginOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../http/auth';
@@ -8,7 +8,7 @@ import { useMutation } from '@tanstack/react-query';
 import { mapServerFormErrors } from '../utils';
 import type { ApiError } from '../types';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const Login = () => {
 	const [form] = Form.useForm();
@@ -25,7 +25,6 @@ const Login = () => {
 		},
 		onError: (error: unknown) => {
 			const apiError = error as ApiError;
-
 			const fieldErrors = mapServerFormErrors(apiError.response?.data);
 
 			if (fieldErrors.general) {
@@ -48,89 +47,102 @@ const Login = () => {
 	};
 
 	return (
-		<div
-			style={{
-				minHeight: '100vh',
-				display: 'flex',
-				justifyContent: 'center',
-				alignItems: 'center',
-				background: '#f5f5f5',
-			}}
+		<Row
+			justify="center"
+			align="middle"
+			style={{ minHeight: '100vh', background: '#f5f5f5' }}
 		>
-			<Form
-				form={form}
-				onFinish={handleLogin}
-				layout="vertical"
-				style={{
-					background: '#fff',
-					padding: 32,
-					borderRadius: 8,
-					boxShadow: '0 2px 8px #f0f1f2',
-					width: 350,
-				}}
-			>
-				<Title
-					level={3}
-					style={{ textAlign: 'center', marginBottom: 24 }}
-				>
-					Login
-				</Title>
-
-				<Form.Item
-					name="email"
-					rules={[
-						{ required: true, message: 'Please input your email!' },
-						{ type: 'email', message: 'Invalid email!' },
-					]}
-				>
-					<Input
-						type="email"
-						placeholder="Enter your email"
-						prefix={<MailOutlined style={{ color: '#f65f42' }} />}
-					/>
-				</Form.Item>
-
-				<Form.Item
-					name="password"
-					rules={[
-						{
-							required: true,
-							message: 'Please input your password!',
-						},
-						{
-							min: 6,
-							message: 'Password must be at least 6 characters',
-						},
-					]}
-				>
-					<Input.Password
-						placeholder="Enter your password"
-						prefix={<LockOutlined style={{ color: '#f65f42' }} />}
-					/>
-				</Form.Item>
-
-				<Form.Item>
-					<Button
-						type="primary"
-						htmlType="submit"
-						block
-						icon={<LoginOutlined />}
-						loading={mutation.isPending}
-						style={{
-							background: '#f65f42',
-							borderColor: '#f65f42',
-						}}
+			<Col xs={22} sm={16} md={12} lg={8}>
+				<Card bordered style={{ borderRadius: 8, padding: '32px' }}>
+					<Space
+						direction="vertical"
+						size="large"
+						style={{ width: '100%' }}
 					>
-						{mutation.isPending ? 'Logging in...' : 'Login'}
-					</Button>
-				</Form.Item>
+						<Title level={3} style={{ textAlign: 'center' }}>
+							Login
+						</Title>
 
-				<div style={{ textAlign: 'center' }}>
-					Don&apos;t have an account?{' '}
-					<Link to="/signup">Sign up</Link>
-				</div>
-			</Form>
-		</div>
+						<Form
+							form={form}
+							onFinish={handleLogin}
+							layout="vertical"
+						>
+							<Form.Item
+								name="email"
+								rules={[
+									{
+										required: true,
+										message: 'Please input your email!',
+									},
+									{
+										type: 'email',
+										message: 'Invalid email!',
+									},
+								]}
+							>
+								<Input
+									type="email"
+									placeholder="Enter your email"
+									prefix={
+										<MailOutlined
+											style={{ color: '#f65f42' }}
+										/>
+									}
+								/>
+							</Form.Item>
+
+							<Form.Item
+								name="password"
+								rules={[
+									{
+										required: true,
+										message: 'Please input your password!',
+									},
+									{
+										min: 6,
+										message:
+											'Password must be at least 6 characters',
+									},
+								]}
+							>
+								<Input.Password
+									placeholder="Enter your password"
+									prefix={
+										<LockOutlined
+											style={{ color: '#f65f42' }}
+										/>
+									}
+								/>
+							</Form.Item>
+
+							<Form.Item>
+								<Button
+									type="primary"
+									htmlType="submit"
+									block
+									icon={<LoginOutlined />}
+									loading={mutation.isPending}
+									style={{
+										background: '#f65f42',
+										borderColor: '#f65f42',
+									}}
+								>
+									{mutation.isPending
+										? 'Logging in...'
+										: 'Login'}
+								</Button>
+							</Form.Item>
+						</Form>
+
+						<Text style={{ textAlign: 'center', display: 'block' }}>
+							Don&apos;t have an account?{' '}
+							<Link to="/signup">Sign up</Link>
+						</Text>
+					</Space>
+				</Card>
+			</Col>
+		</Row>
 	);
 };
 

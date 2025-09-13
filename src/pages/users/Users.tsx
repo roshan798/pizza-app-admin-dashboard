@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Button, Input, Select, Space } from 'antd';
+import { Button, Input, Select, Space, Card, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import TenantModal from './components/TenantModal';
-import ConfirmDeleteModal from './components/ConfirmDeleteModal';
-import { getTenantById } from '../../http/tenants';
 import { useQuery } from '@tanstack/react-query';
-import type { Tenant, User } from './types/types';
+import ConfirmDeleteModal from './components/ConfirmDeleteModal';
+import TenantModal from '../tenants/components/TenantModal';
 import UserTable from './components/UsersTable';
+import { getTenantById } from '../../http/tenants';
 import { useUsers } from './hooks/useUsers';
+import type { User } from '../../store/userStore';
+import type { Tenant } from '../tenants/types/types';
 
 export default function Users() {
 	const navigate = useNavigate();
@@ -16,10 +17,8 @@ export default function Users() {
 
 	const [roleFilter, setRoleFilter] = useState<string>();
 	const [search, setSearch] = useState('');
-
 	const [tenantId, setTenantId] = useState<number | null>(null);
 	const [isTenantModalOpen, setIsTenantModalOpen] = useState(false);
-
 	const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 	const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
@@ -51,45 +50,45 @@ export default function Users() {
 			) || [];
 
 	return (
-		<div style={{ background: '#fff', padding: 24, borderRadius: 8 }}>
-			{/* Filters */}
-			<div
-				style={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					marginBottom: 16,
-				}}
+		<Card variant="outlined">
+			<Row
+				justify="space-between"
+				align="middle"
+				gutter={[16, 16]}
+				style={{ marginBottom: 16 }}
 			>
-				<Space>
-					<Input.Search
-						placeholder="Search users"
-						allowClear
-						onChange={(e) => setSearch(e.target.value)}
-						style={{ width: 200 }}
-					/>
-					<Select
-						placeholder="Filter by Role"
-						allowClear
-						onChange={(val) => setRoleFilter(val)}
-						style={{ width: 150 }}
-						options={[
-							{ label: 'Admin', value: 'admin' },
-							{ label: 'Customer', value: 'customer' },
-							{ label: 'Manager', value: 'manager' },
-						]}
-					/>
-				</Space>
+				<Col>
+					<Space>
+						<Input.Search
+							placeholder="Search users"
+							allowClear
+							onChange={(e) => setSearch(e.target.value)}
+							style={{ width: 200 }}
+						/>
+						<Select
+							placeholder="Filter by Role"
+							allowClear
+							onChange={(val) => setRoleFilter(val)}
+							style={{ width: 150 }}
+							options={[
+								{ label: 'Admin', value: 'admin' },
+								{ label: 'Customer', value: 'customer' },
+								{ label: 'Manager', value: 'manager' },
+							]}
+						/>
+					</Space>
+				</Col>
+				<Col>
+					<Button
+						type="primary"
+						icon={<PlusOutlined />}
+						onClick={() => navigate('/users/create')}
+					>
+						Create User
+					</Button>
+				</Col>
+			</Row>
 
-				<Button
-					type="primary"
-					icon={<PlusOutlined />}
-					onClick={() => navigate('/users/create')}
-				>
-					Create User
-				</Button>
-			</div>
-
-			{/* Table */}
 			<UserTable
 				users={filteredUsers}
 				isLoading={isLoading}
@@ -119,7 +118,8 @@ export default function Users() {
 			<ConfirmDeleteModal
 				open={isConfirmOpen}
 				onConfirm={() =>
-					userToDelete && deleteMutation.mutate(userToDelete.id)
+					userToDelete &&
+					deleteMutation.mutate(Number(userToDelete.id))
 				}
 				onCancel={() => {
 					setIsConfirmOpen(false);
@@ -128,6 +128,6 @@ export default function Users() {
 				isLoading={deleteMutation.isPending}
 				user={userToDelete}
 			/>
-		</div>
+		</Card>
 	);
 }

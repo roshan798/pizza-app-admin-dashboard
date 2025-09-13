@@ -4,7 +4,7 @@ import { useNotification } from '../../../hooks/useNotification';
 import type { ApiError } from '../../../types';
 import { mapServerFormErrors } from '../../../utils';
 import { deleteUserById, getAllUsers } from '../../../http/users';
-import type { User } from '../types/types';
+import type { User } from '../../../store/userStore';
 
 export const useUsers = () => {
 	const queryClient = useQueryClient();

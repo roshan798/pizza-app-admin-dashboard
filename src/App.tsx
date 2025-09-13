@@ -1,46 +1,48 @@
-import { Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
-import Category from './pages/Category';
-import MainLayout from './layouts/MainLayout';
-import AuthLayout from './layouts/AuthLayout';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import AdminRoute from './routes/AdminRoute';
-import AuthRoute from './routes/AuthRoute';
-import Users from './pages/users/Users';
-import CreateOrUpdateUser from './pages/users/CreateOrUpdateUser';
+import './index.css';
+import { ConfigProvider, theme as antdTheme } from 'antd';
+import { NotificationProvider } from './context/NotificationProvider.tsx';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './routes/routes.ts';
+import { useEffect } from 'react';
+import { useThemeStore } from './store/useThemeStore.ts';
 
-function App() {
+const query = new QueryClient();
+
+const App = () => {
+	const { mode, resolved, setMode } = useThemeStore();
+
+	useEffect(() => {
+		if (mode === 'system') {
+			const mq = window.matchMedia('(prefers-color-scheme: dark)');
+			const update = () => setMode('system');
+			mq.addEventListener('change', update);
+			return () => mq.removeEventListener('change', update);
+		}
+	}, [mode, setMode]);
+
 	return (
-		<>
-			<Routes>
-				{/* Public routes */}
-				<Route element={<AuthLayout />}>
-					<Route element={<AuthRoute />}>
-						<Route path="/login" element={<Login />} />
-						<Route path="/signup" element={<Signup />} />
-					</Route>
-				</Route>
-
-				{/* Private routes */}
-				<Route element={<AdminRoute />}>
-					<Route element={<MainLayout />}>
-						<Route path="/" element={<Home />} />
-						<Route path="/category" element={<Category />} />
-						<Route path="/users" element={<Users />} />
-						<Route
-							path="/users/create"
-							element={<CreateOrUpdateUser />}
-						/>
-						<Route
-							path="/users/edit/:userId"
-							element={<CreateOrUpdateUser />}
-						/>
-					</Route>
-				</Route>
-			</Routes>
-		</>
+		<ConfigProvider
+			theme={{
+				algorithm:
+					resolved === 'dark'
+						? antdTheme.darkAlgorithm
+						: antdTheme.defaultAlgorithm,
+				token: {
+					colorPrimary: '#f65f42',
+					colorBgLayout: resolved === 'dark' ? '#1f1f1f' : '#fff',
+					colorText: resolved === 'dark' ? '#fff' : '#000',
+					colorBgContainer: resolved === 'dark' ? '#141414' : '#fff',
+				},
+			}}
+		>
+			<NotificationProvider>
+				<QueryClientProvider client={query}>
+					<RouterProvider router={router} />
+				</QueryClientProvider>
+			</NotificationProvider>
+		</ConfigProvider>
 	);
-}
+};
 
 export default App;

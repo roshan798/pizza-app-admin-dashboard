@@ -4,12 +4,14 @@ import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import { Outlet } from 'react-router-dom';
+import Breadcrumbs from '../components/Breadcrumb';
+import { useThemeStore } from '../store/useThemeStore';
 
 const { Sider, Content } = Layout;
 
 const MainLayout = () => {
 	const [sideCollapsed, setSideCollapsed] = useState(false);
-
+	const { resolved: theme } = useThemeStore();
 	return (
 		<Layout style={{ minHeight: '100vh' }}>
 			<Header />
@@ -18,12 +20,13 @@ const MainLayout = () => {
 					collapsible
 					collapsed={sideCollapsed}
 					onCollapse={setSideCollapsed}
-					style={{ background: '#001529' }}
+					theme={theme}
 				>
 					<Sidebar />
 				</Sider>
-				<Layout style={{ background: '#fff' }}>
+				<Layout>
 					<Content style={{ margin: 24, minHeight: 280 }}>
+						<Breadcrumbs />
 						<Outlet />
 					</Content>
 					<Footer />

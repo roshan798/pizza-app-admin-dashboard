@@ -1,5 +1,5 @@
 import { Modal } from 'antd';
-import type { User } from '../types/types';
+import type { User } from '../../../store/userStore';
 
 interface ConfirmDeleteModalProps {
 	open: boolean;

@@ -25,6 +25,9 @@ export interface User {
 	lastName: string;
 	email: string;
 	role: Roles;
+	tenantId?: string;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 export interface UserState {

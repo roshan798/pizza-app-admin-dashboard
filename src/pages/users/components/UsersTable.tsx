@@ -2,7 +2,7 @@ import { Table, Tag, Button, Space, Avatar, Dropdown } from 'antd';
 import { MoreOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
-import type { User } from '../types/types';
+import type { User } from '../../../store/userStore';
 
 interface UserTableProps {
 	users: User[];
@@ -21,7 +21,7 @@ export default function UserTable({
 }: UserTableProps) {
 	const columns: ColumnsType<User> = [
 		{
-			title: 'User name',
+			title: 'User Name',
 			key: 'name',
 			sorter: (a, b) =>
 				`${a.firstName} ${a.lastName}`.localeCompare(
@@ -30,9 +30,12 @@ export default function UserTable({
 			render: (_, record) => (
 				<Space>
 					<Avatar>{record.firstName[0]}</Avatar>
-					{record.firstName} {record.lastName}
+					<span>
+						{record.firstName} {record.lastName}
+					</span>
 				</Space>
 			),
+			responsive: ['xs', 'sm', 'md', 'lg', 'xl'], // always visible
 		},
 		{
 			title: 'Role',
@@ -54,18 +57,21 @@ export default function UserTable({
 				}
 				return <Tag color={color}>{role}</Tag>;
 			},
+			responsive: ['sm', 'md', 'lg', 'xl'], // hide on xs
 		},
 		{
 			title: 'Email',
 			dataIndex: 'email',
 			key: 'email',
 			sorter: (a, b) => a.email.localeCompare(b.email),
+			responsive: ['md', 'lg', 'xl'], // hide on xs/sm
 		},
 		{
 			title: 'Tenant',
 			dataIndex: 'tenantId',
 			key: 'tenantId',
-			sorter: (a, b) => (a.tenantId || 0) - (b.tenantId || 0),
+			sorter: (a, b) =>
+				(Number(a.tenantId) || 0) - (Number(b.tenantId) || 0),
 			render: (tenantId: number | null) =>
 				tenantId ? (
 					<Button type="link" onClick={() => onTenantClick(tenantId)}>
@@ -74,6 +80,7 @@ export default function UserTable({
 				) : (
 					<Tag>No Tenant</Tag>
 				),
+			responsive: ['lg', 'xl'], // hide on small screens
 		},
 		{
 			title: 'Created At',
@@ -89,6 +96,7 @@ export default function UserTable({
 					hour: '2-digit',
 					minute: '2-digit',
 				}),
+			responsive: ['xl'], // only show on xl
 		},
 		{
 			title: 'Actions',
@@ -129,9 +137,10 @@ export default function UserTable({
 			loading={isLoading}
 			pagination={{
 				pageSizeOptions: ['5', '10', '25', '50', '100'],
-				defaultPageSize: 5,
+				defaultPageSize: 10,
 				showSizeChanger: true,
 			}}
+			scroll={{ x: 900 }} // horizontal scroll on small screens
 		/>
 	);
 }

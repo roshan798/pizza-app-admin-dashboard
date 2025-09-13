@@ -1,129 +1,169 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Layout, Menu, Button, Avatar } from 'antd';
-import { UserOutlined, LogoutOutlined, LoginOutlined } from '@ant-design/icons';
-import { logout as logoutFromServer, self } from '../http/auth';
+import { Layout, Button, Avatar, Dropdown, Typography, Space } from 'antd';
+import {
+	UserOutlined,
+	LogoutOutlined,
+	LoginOutlined,
+	BulbOutlined,
+	MoonOutlined,
+	LaptopOutlined,
+} from '@ant-design/icons';
+import { logout as logoutFromServer } from '../http/auth';
 import { useUserStore } from '../store/userStore';
 import { useNotification } from '../hooks/useNotification';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
-const { Header: AntHeader } = Layout;
+import { useQueryClient } from '@tanstack/react-query';
+import { useThemeStore } from '../store/useThemeStore';
+import type { MenuProps } from 'antd';
 
-const Header = () => {
+const { Header } = Layout;
+const { Text } = Typography;
+
+const AppHeader = () => {
 	const queryClient = useQueryClient();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const notify = useNotification();
-	const isLoginPage = location.pathname === '/login';
-	const isSignupPage = location.pathname === '/signup';
-	const { logout, setUser, user } = useUserStore();
-	const { data, error } = useQuery({
-		queryKey: ['self'],
-		queryFn: self,
-		staleTime: 1000 * 60 * 5,
-		retry: false,
-		enabled: !user,
-	});
-	useEffect(() => {
-		if (data) {
-			setUser(data.data.user);
-		}
-	}, [data, setUser]);
 
-	useEffect(() => {
-		if (error) {
-			console.error('Failed to fetch user', error);
-		}
-	}, [error]);
+	const isLoginPage = location.pathname === '/login';
+	const { logout, user } = useUserStore();
+	const { mode, setMode } = useThemeStore();
+
 	const handleLogout = async () => {
 		try {
-			const res = await logoutFromServer();
+			await logoutFromServer();
 			queryClient.removeQueries({ queryKey: ['self'] });
-			console.log(res);
 			logout();
 			notify('success', 'Logout successful');
 			navigate('/login');
 		} catch (err) {
 			console.error(err);
-			notify('error', 'Something bad happened!');
+			notify('error', 'Something went wrong!');
 		}
 	};
 
+	const themeItems: MenuProps['items'] = [
+		{
+			key: 'light',
+			icon: <BulbOutlined />,
+			label: 'Light',
+			onClick: () => setMode('light'),
+		},
+		{
+			key: 'dark',
+			icon: <MoonOutlined />,
+			label: 'Dark',
+			onClick: () => setMode('dark'),
+		},
+		{
+			key: 'system',
+			icon: <LaptopOutlined />,
+			label: 'System',
+			onClick: () => setMode('system'),
+		},
+	];
+
+	const userItems: MenuProps['items'] = user
+		? [
+				{
+					key: 'profile',
+					label: (
+						<div onClick={() => navigate('/me')}>
+							<Text strong>
+								{user.firstName} {user.lastName}
+							</Text>
+							<br />
+							<Text type="secondary" style={{ fontSize: 12 }}>
+								{user.email}
+							</Text>
+						</div>
+					),
+					disabled: false,
+				},
+				{
+					key: 'logout',
+					icon: <LogoutOutlined />,
+					label: 'Logout',
+					onClick: handleLogout,
+				},
+			]
+		: [];
+
 	return (
-		<AntHeader
+		<Header
 			style={{
-				background: '#fff',
 				position: 'sticky',
 				top: 0,
 				zIndex: 10,
 				padding: '0 32px',
 				display: 'flex',
-				alignItems: 'center',
 				justifyContent: 'space-between',
-				height: 64,
+				alignItems: 'center',
+				background: '#fff',
 			}}
 		>
-			{/* Left: Logo */}
-			<div style={{ fontSize: 28, fontWeight: 700, color: '#f65f42' }}>
+			<Text strong style={{ fontSize: 24, color: '#f65f42' }}>
 				PizzaDash
-			</div>
+			</Text>
 
-			{/* Right: Navigation */}
-			<div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-				<Menu
-					mode="horizontal"
-					selectedKeys={[location.pathname]}
-					style={{
-						borderBottom: 'none',
-						fontSize: 18,
-						minWidth: 200,
-					}}
-				>
-					{!isLoginPage && !isSignupPage && (
-						<Menu.Item
-							key="logout"
-							onClick={handleLogout}
-							icon={<LogoutOutlined />}
-							style={{ color: '#f65f42' }}
-						>
-							Logout
-						</Menu.Item>
-					)}
-				</Menu>
+			<Space size="large">
+				<Dropdown menu={{ items: themeItems }} trigger={['click']}>
+					<Button icon={<BulbOutlined />}>
+						{mode.charAt(0).toUpperCase() + mode.slice(1)}
+					</Button>
+				</Dropdown>
 
-				{isLoginPage ? (
+				{user ? (
+					<Dropdown menu={{ items: userItems }} trigger={['click']}>
+						<Avatar
+							icon={
+								<UserOutlined
+									style={{
+										color: ['dark', 'system'].includes(mode)
+											? '#fff'
+											: undefined,
+									}}
+								/>
+							}
+							size={40}
+							style={{
+								border: `2px solid ${['dark', 'system'].includes(mode) ? '#f65f42' : '#f65f42'}`,
+								backgroundColor: ['dark', 'system'].includes(
+									mode
+								)
+									? '#333'
+									: undefined,
+								cursor: 'pointer',
+							}}
+						/>
+					</Dropdown>
+				) : isLoginPage ? (
 					<Button
 						type="primary"
 						icon={<UserOutlined />}
+						onClick={() => navigate('/signup')}
 						style={{
 							background: '#f65f42',
 							borderColor: '#f65f42',
 						}}
-						onClick={() => navigate('/signup')}
 					>
-						Sign up
+						Sign Up
 					</Button>
-				) : isSignupPage ? (
+				) : (
 					<Button
 						type="primary"
 						icon={<LoginOutlined />}
+						onClick={() => navigate('/login')}
 						style={{
 							background: '#f65f42',
 							borderColor: '#f65f42',
 						}}
-						onClick={() => navigate('/login')}
 					>
 						Login
 					</Button>
-				) : null}
-
-				<Avatar
-					src="https://i.pravatar.cc/32"
-					size={40}
-					style={{ border: '2px solid #f65f42' }}
-				/>
-			</div>
-		</AntHeader>
+				)}
+			</Space>
+		</Header>
 	);
 };
 
-export default Header;
+export default AppHeader;

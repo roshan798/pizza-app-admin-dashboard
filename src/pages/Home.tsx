@@ -1,126 +1,202 @@
+import {
+	Card,
+	Col,
+	Row,
+	Statistic,
+	Table,
+	List,
+	Typography,
+	Tag,
+	Spin,
+	message,
+	Space,
+} from 'antd';
+import {
+	UserOutlined,
+	ApartmentOutlined,
+	ShoppingCartOutlined,
+	ArrowUpOutlined,
+	ArrowDownOutlined,
+} from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { getAllUsers } from '../http/users';
+import type { User } from '../store/userStore';
+
+const { Title } = Typography;
+
 const Home = () => {
+	const [users, setUsers] = useState<User[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	// Dummy fallback data
+	const fallbackData: User[] = [
+		{
+			id: '1',
+			firstName: 'Alice',
+			lastName: 'Singh',
+			role: 'admin',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			email: 'test@gmail.com',
+		},
+		{
+			id: '2',
+			firstName: 'Bob',
+			lastName: 'Singh',
+			role: 'manager',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			email: 'test@gmail.com',
+		},
+		{
+			id: '3',
+			firstName: 'Charlie',
+			lastName: 'Singh',
+			role: 'customer',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			email: 'test@gmail.com',
+		},
+	];
+
+	// Columns for AntD Table
+	const columns = [
+		{ title: 'ID', dataIndex: 'id', key: 'id' },
+		{
+			title: 'Name',
+			key: 'name',
+			render: (_: unknown, record: User) => (
+				<span>
+					{record.firstName} {record.lastName}
+				</span>
+			),
+		},
+		{
+			title: 'Role',
+			dataIndex: 'role',
+			key: 'role',
+			render: (role: string) => {
+				const color =
+					role === 'admin'
+						? 'red'
+						: role === 'manager'
+							? 'blue'
+							: 'green';
+				const formattedRole =
+					role.charAt(0).toUpperCase() + role.slice(1);
+				return <Tag color={color}>{formattedRole}</Tag>;
+			},
+		},
+	];
+
+	// Recent Activity (can also fetch if API available)
+	const activities = [
+		'Alice created a new user',
+		'Bob updated tenant details',
+		'Charlie placed an order',
+	];
+
+	useEffect(() => {
+		const fetchUsers = async () => {
+			try {
+				const res = await getAllUsers();
+				setUsers(res.data.users);
+			} catch (err) {
+				console.error(
+					'[Home] Failed to fetch users, using dummy:',
+					err
+				);
+				message.warning('Showing fallback user data');
+				setUsers(fallbackData);
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchUsers();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	return (
-		<div>
-			<div className="border-2 border-solid solid border-red-500 h-full w-full">
-				Home
-			</div>
-			Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eum omnis
-			cum rerum sint exercitationem, impedit doloribus error enim. Maxime,
-			adipisci illum repellat excepturi pariatur eligendi quas nihil
-			eaque, tempora perferendis repellendus sequi atque placeat quos!
-			Saepe necessitatibus odio dolorum, quaerat iure debitis quae cumque
-			culpa libero natus, itaque in quasi nihil nam, reiciendis fuga
-			labore cupiditate laborum aspernatur illo vero doloribus numquam!
-			Nihil, temporibus vitae laborum autem fugit sequi enim, unde
-			corporis quos, labore modi aut ex omnis? Amet eveniet totam in eius
-			iure quibusdam a nihil, fugit, fuga impedit nostrum? Nihil molestias
-			eos nulla doloribus totam labore, a necessitatibus ullam porro
-			possimus dicta, ad, eum saepe officiis quidem sint ab sit cumque
-			adipisci. Nemo molestiae ducimus obcaecati aspernatur ex at debitis
-			recusandae, nihil blanditiis perferendis asperiores maiores ea?
-			Natus explicabo dolore repellat laboriosam sint! Beatae, aut minus
-			nihil recusandae saepe quaerat consectetur obcaecati dolorum aliquid
-			error soluta non dolore dicta maiores quos laborum possimus, tenetur
-			debitis. Veritatis itaque, fugiat ut officia dolorum excepturi
-			incidunt, illo quaerat beatae laborum magni. Animi fugiat, eligendi
-			ut reiciendis similique eveniet earum dolore esse vel! Vel facilis
-			rerum expedita quaerat? Quis ea consequatur qui molestiae. Illo
-			eveniet debitis nam voluptas optio suscipit explicabo officia dolor
-			assumenda ullam, labore reprehenderit corporis blanditiis
-			laboriosam! Aperiam minima tempore reprehenderit tenetur omnis
-			eveniet praesentium necessitatibus incidunt quos in. Nam, soluta
-			neque ut magnam corporis asperiores expedita fugit earum ipsum
-			accusantium alias. Accusantium neque atque deleniti corrupti
-			laudantium magni facere sequi aperiam cum ab reprehenderit quos
-			assumenda ducimus officiis veritatis corporis cupiditate, animi
-			autem veniam quis dolore molestiae voluptates. Fuga optio voluptatem
-			provident aspernatur perferendis vitae soluta dolorem dolor sint
-			quia ut dolores expedita corrupti libero debitis quae, cumque ipsum
-			earum possimus deleniti? Doloribus dolore, sunt quis voluptates
-			porro a cum provident illo quisquam unde iste similique minus
-			inventore cupiditate excepturi saepe ea tenetur repellendus corrupti
-			molestiae laborum. Sunt ipsam sint deserunt ex. Blanditiis accusamus
-			perferendis assumenda est culpa tenetur recusandae vero quasi porro,
-			pariatur esse ducimus voluptas tempore. Fugiat rem, dolor odio,
-			magni pariatur natus quisquam ratione voluptatem laboriosam nostrum
-			labore nulla laudantium dolore aliquam possimus, totam commodi
-			molestias optio at ex eligendi sequi repellat. Optio libero dolore
-			perferendis, ullam alias ut necessitatibus culpa doloremque sit
-			reprehenderit totam iste adipisci laborum enim ab quibusdam
-			temporibus minus explicabo quisquam pariatur quia error? Iusto quia
-			officia cumque tempore, ad iste, saepe quae minus nisi sequi itaque
-			eligendi soluta quidem officiis id beatae. Illum expedita similique
-			eligendi sapiente, optio delectus sed repudiandae dolores
-			consequuntur, quidem nihil quo saepe vero tempora voluptates eos
-			laborum sequi temporibus distinctio atque! Unde quaerat vero
-			delectus recusandae iusto temporibus assumenda commodi ab nam!
-			Cumque, vitae ea voluptate perferendis explicabo non debitis? Alias
-			sapiente deleniti deserunt similique! Nam illum, cum ad eum dicta
-			saepe. Ad, officiis distinctio. Aliquam quis totam modi laboriosam
-			quos repellendus dolorum iusto nesciunt error praesentium placeat
-			labore possimus, vitae cupiditate. Mollitia, voluptates maxime.
-			Ipsum quisquam animi excepturi fugit, magni laborum perferendis
-			praesentium autem facilis. Ipsam itaque sapiente consequatur ullam
-			excepturi obcaecati corrupti alias architecto! Beatae cumque, aut
-			dignissimos natus neque eius assumenda facere fugit omnis, eligendi
-			facilis doloribus quisquam, vel earum voluptatibus repudiandae. A
-			reiciendis inventore repudiandae, aliquam vel, sint voluptas quia
-			deserunt pariatur quo delectus suscipit aperiam cumque, officiis
-			commodi? Dolor quos et ab ducimus officiis, adipisci commodi esse
-			vitae maxime. Praesentium dolorem porro eos odit non eum, veniam
-			voluptatibus laborum, amet quam nam adipisci tempore error odio quo
-			iure, labore ipsa? Repudiandae, asperiores nihil odio consequatur id
-			animi modi. Est ut qui corporis nulla dolorem officiis officia
-			provident debitis tempora minus unde, consequuntur excepturi vitae
-			nemo asperiores molestiae corrupti repudiandae alias sapiente
-			aspernatur, sed temporibus laborum. Illo earum similique cupiditate
-			facere! Numquam, cumque. Dicta, distinctio voluptatum porro sed
-			nostrum repudiandae reprehenderit quod molestias incidunt iusto
-			exercitationem minus, esse, sint animi ab laboriosam eveniet ratione
-			laborum ipsam. Delectus reiciendis quos velit mollitia vero
-			blanditiis aspernatur aliquam qui, labore ea veritatis beatae
-			nesciunt in ratione itaque omnis fuga ut recusandae iste, expedita,
-			fugit nostrum laudantium! Mollitia qui quibusdam provident quam nisi
-			pariatur ratione itaque? Nobis, voluptatem corporis, dolorem
-			excepturi atque inventore deleniti repellendus fugiat a debitis
-			voluptate, ullam quae harum at deserunt? Esse asperiores assumenda
-			dolorem est nemo sit optio cumque minima nisi earum officiis
-			deleniti exercitationem itaque eligendi inventore, neque distinctio
-			suscipit. Ut quidem vero veniam nobis quod perspiciatis tenetur quas
-			totam adipisci corporis minus id velit amet rem, nemo deleniti in
-			odio molestias quo laboriosam asperiores? Laboriosam sed corporis
-			cumque cupiditate numquam quasi quos ut, obcaecati modi animi quam
-			odit delectus esse ipsam porro in ratione amet voluptatem tempora
-			iste eligendi. Eos ipsam minus perferendis veniam commodi non? Dolor
-			tenetur aspernatur distinctio accusantium quos at quas vitae tempore
-			est eaque nulla similique consequatur ratione, iste aut soluta
-			consequuntur quia ex laborum dolore atque illum! Facilis omnis
-			laboriosam ab similique numquam! Modi quasi velit harum libero autem
-			tempora, nulla aut fuga incidunt nihil laborum nisi perferendis
-			ullam similique nemo dolorem voluptatibus dolor? Doloremque aliquam
-			rem ab soluta, reiciendis doloribus atque id impedit totam
-			temporibus! Aliquam debitis delectus doloremque, distinctio, alias
-			repellat laboriosam rem beatae unde maiores, et quos illo.
-			Consectetur aliquam dolorum repudiandae voluptate maxime error
-			tenetur? Nam distinctio, nobis, incidunt magnam minima porro
-			recusandae provident, natus qui ducimus blanditiis. Sed voluptatibus
-			numquam asperiores autem tempora dolorum, sit in recusandae
-			quibusdam cupiditate atque ducimus fuga odit sunt nesciunt omnis,
-			suscipit, laudantium deleniti? Laborum doloremque sapiente
-			cupiditate delectus, in accusantium error rem, aut est animi harum
-			dolorum voluptas, ratione nisi doloribus totam! Blanditiis eos omnis
-			ab molestias esse deleniti voluptatibus iste ratione impedit! Quos,
-			mollitia tenetur? Rerum recusandae quidem totam dolor ipsum expedita
-			cum facilis delectus dolorum corrupti, sunt inventore labore ex
-			pariatur fugit laudantium aperiam incidunt, fuga adipisci tempora
-			explicabo. Quibusdam harum itaque recusandae similique magni
-			expedita voluptate nisi ea possimus, asperiores ab fugit. Possimus
-			accusantium recusandae blanditiis dolores aperiam veritatis mollitia
-			saepe, adipisci quidem incidunt enim animi temporibus, eveniet at
-			iusto inventore harum, facere commodi! Repellat, officiis? Vero iure
-			perferendis expedita voluptate nisi recusandae. Reprehenderit
-			repellat vitae rem, velit perspiciatis unde!
-		</div>
+		<Space
+			direction="vertical"
+			size="large"
+			style={{ width: '100%', padding: 24 }}
+		>
+			{/* Page Title */}
+			<Title level={2}>Dashboard Overview</Title>
+
+			{/* Stats Section */}
+			<Row gutter={[16, 16]}>
+				<Col xs={24} sm={12} md={8}>
+					<Card>
+						<Statistic
+							title="Total Users"
+							value={Math.floor(Math.random() * 1000)}
+							prefix={<UserOutlined />}
+							valueStyle={{ color: '#3f8600' }}
+							suffix={<ArrowUpOutlined />}
+						/>
+					</Card>
+				</Col>
+				<Col xs={24} sm={12} md={8}>
+					<Card>
+						<Statistic
+							title="Active Tenants"
+							value={Math.floor(Math.random() * 500)}
+							prefix={<ApartmentOutlined />}
+							valueStyle={{ color: '#1890ff' }}
+							suffix={<ArrowUpOutlined />}
+						/>
+					</Card>
+				</Col>
+				<Col xs={24} sm={12} md={8}>
+					<Card>
+						<Statistic
+							title="Pending Orders"
+							value={Math.floor(Math.random() * 200)}
+							prefix={<ShoppingCartOutlined />}
+							valueStyle={{ color: '#cf1322' }}
+							suffix={<ArrowDownOutlined />}
+						/>
+					</Card>
+				</Col>
+			</Row>
+
+			{/* Main Content Section */}
+			<Row gutter={[16, 16]}>
+				{/* Users Overview Table */}
+				<Col xs={24} lg={14}>
+					<Card
+						title="Users Overview"
+						variant="outlined"
+						style={{ borderRadius: 8 }}
+					>
+						<Spin spinning={loading}>
+							<Table
+								dataSource={users}
+								columns={columns}
+								pagination={false}
+								rowKey="id"
+							/>
+						</Spin>
+					</Card>
+				</Col>
+
+				{/* Recent Activity List */}
+				<Col xs={24} lg={10}>
+					<Card
+						title="Recent Activity"
+						variant="outlined"
+						style={{ borderRadius: 8 }}
+					>
+						<List
+							dataSource={activities}
+							renderItem={(item) => <List.Item>{item}</List.Item>}
+						/>
+					</Card>
+				</Col>
+			</Row>
+		</Space>
 	);
 };
 

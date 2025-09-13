@@ -8,11 +8,12 @@ import {
 	BarChartOutlined,
 	SettingOutlined,
 } from '@ant-design/icons';
+import { useThemeStore } from '../store/useThemeStore';
 
 const sidebarLinks = [
 	{ to: '/', label: 'Dashboard', icon: <HomeOutlined /> },
-	{ to: '/orders', label: 'Orders', icon: <ShoppingCartOutlined /> },
 	{ to: '/users', label: 'Users', icon: <UsergroupAddOutlined /> },
+	{ to: '/tenants', label: 'Tenants', icon: <ShoppingCartOutlined /> },
 	{ to: '/reports', label: 'Reports', icon: <BarChartOutlined /> },
 	{ to: '/settings', label: 'Settings', icon: <SettingOutlined /> },
 ];
@@ -20,11 +21,12 @@ const sidebarLinks = [
 const Sidebar: React.FC = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
+	const { resolved: theme } = useThemeStore();
 
 	return (
 		<Menu
 			mode="inline"
-			theme="dark"
+			theme={theme}
 			selectedKeys={[location.pathname]}
 			style={{
 				height: '100%',
@@ -40,7 +42,6 @@ const Sidebar: React.FC = () => {
 				label: <span style={{ fontSize: 18 }}>{link.label}</span>,
 				onClick: () => navigate(link.to),
 			}))}
-			className="custom-sidebar-menu"
 		/>
 	);
 };

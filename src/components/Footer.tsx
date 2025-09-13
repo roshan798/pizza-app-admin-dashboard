@@ -1,12 +1,23 @@
-const Footer = () => {
+import { Layout, Typography } from 'antd';
+
+const { Footer } = Layout;
+const { Text } = Typography;
+
+const AppFooter = () => {
 	return (
-		<footer className="bg-gray-800 text-white py-4 text-center">
-			<p className="text-sm">
+		<Footer
+			style={{
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+			}}
+		>
+			<Text>
 				&copy; {new Date().getFullYear()} Pizza Delivery App. All rights
 				reserved.
-			</p>
-		</footer>
+			</Text>
+		</Footer>
 	);
 };
 
-export default Footer;
+export default AppFooter;

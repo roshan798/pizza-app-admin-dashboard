@@ -1,11 +1,11 @@
-/* @import 'tailwindcss'; */
+@import 'tailwindcss';
 @import 'antd/dist/reset.css';
 
 :root {
 	--color-primary: #f65f42;
 }
 
-.custom-sidebar-menu .ant-menu-item {
+/* .custom-sidebar-menu .ant-menu-item {
 	transition: background 0.2s;
 }
 
@@ -24,7 +24,7 @@
 
 .custom-sidebar-menu .ant-menu-title-content {
 	font-size: 18px !important;
-}
+} */
 
 /* @theme {
 	--color-primary: #f65f42;

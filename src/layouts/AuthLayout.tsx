@@ -9,15 +9,7 @@ const AuthLayout = () => {
 	return (
 		<Layout style={{ minHeight: '100vh' }}>
 			<Header />
-			<Content
-				style={{
-					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'center',
-					justifyContent: 'center',
-					minHeight: 'calc(100vh - 64px - 70px)',
-				}}
-			>
+			<Content>
 				<Outlet />
 			</Content>
 			<Footer />
