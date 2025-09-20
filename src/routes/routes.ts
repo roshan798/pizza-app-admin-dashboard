@@ -30,11 +30,13 @@ const CategoryDetails = lazy(
 	() => import('../pages/Catogories/CategoryDetails')
 );
 const CategoryFormPage = lazy(
-	() => import('../pages/Catogories/CategoryFormPage')
+	() => import('../pages/Catogories/categoriesForm/CategoryFormPage')
 );
 
 const Products = lazy(() => import('../pages/Products/Products'));
-const CreateProductForm = lazy(() => import('../pages/Products/CreateProduct'));
+const CreateProductForm = lazy(
+	() => import('../pages/Products/ProductsForm/index')
+);
 const ProductPreviewCustomer = lazy(
 	() => import('../pages/Products/ProductPreview')
 );
