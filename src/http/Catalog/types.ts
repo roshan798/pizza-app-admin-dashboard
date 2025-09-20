@@ -22,6 +22,13 @@ export interface Category {
 	updatedAt?: Date;
 }
 
+export interface CategoryListItem {
+	id: string;
+	name: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
 //product
 export interface ProductResponse {
 	success: boolean;

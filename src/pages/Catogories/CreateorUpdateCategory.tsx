@@ -48,7 +48,7 @@ export default function CreateOrUpdateCategoryForm({
 	const [form] = Form.useForm();
 	const queryClient = useQueryClient();
 	if (mode === 'update') {
-		console.log('initia l category  :', initialCategory);
+		console.log('initial category  :', initialCategory);
 	}
 	const mutation = useMutation({
 		mutationFn: async (payload: Category) => {

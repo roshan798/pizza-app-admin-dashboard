@@ -15,6 +15,7 @@ const CONFIG = {
 	},
 	categories: {
 		url: '/catalog/categories',
+		list: '/catalog/categories/list',
 	},
 	products: {
 		url: '/catalog/products',

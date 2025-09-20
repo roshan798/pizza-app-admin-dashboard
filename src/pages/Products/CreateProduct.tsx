@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
 	Form,
 	Input,
@@ -10,33 +11,36 @@ import {
 	Switch,
 	Upload,
 	type UploadFile,
-	message,
+	Spin,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import { fetchCategories } from '../../http/Catalog/categories';
+import {
+	fetchCategoriesList,
+	fetchCategoryById,
+} from '../../http/Catalog/categories';
 import type {
 	Category,
+	CategoryListItem,
 	Product,
 	ProductAttribute,
 	ProductPriceConfiguration,
 	ProductPriceType,
 } from '../../http/Catalog/types';
-import { createProduct } from '../../http/Catalog/products';
-import { useState } from 'react';
+import {
+	createProduct,
+	fetchProductById,
+	updateProduct,
+} from '../../http/Catalog/products';
+import { useEffect, useState } from 'react';
+import { useNotification } from '../../hooks/useNotification';
 
 const { Title } = Typography;
-
-// interface Props {
-// 	tenantId: string;
-// 	onSuccess?: () => void;
-// }
 
 interface ProductFormValues {
 	name: string;
 	description: string;
 	categoryId: string;
 	image?: UploadFile[];
-	// For the UI we keep simple shapes; we’ll transform in handleSubmit
 	priceConfiguration?: Record<
 		string,
 		Record<string, string | number> | string | number
@@ -47,14 +51,9 @@ interface ProductFormValues {
 
 const logFormData = (formData: FormData) => {
 	for (const [key, value] of formData.entries()) {
-		// File logs as [object File]
 		console.log(key, value);
 	}
 };
-
-// Helpers to serialize Map payloads
-// const mapToObject = <T,>(m: Map<string, T>) =>
-//     Object.fromEntries(Array.from(m.entries()));
 
 const priceCfgToSerializable = (pc: Map<string, ProductPriceConfiguration>) => {
 	const out: Record<
@@ -75,157 +74,232 @@ const priceCfgToSerializable = (pc: Map<string, ProductPriceConfiguration>) => {
 	return out;
 };
 
-export default function CreateProductForm() {
+export default function CreateOrUpdateProductForm() {
+	const { id } = useParams<{ id?: string }>(); // edit mode if id exists
+	const isEdit = Boolean(id);
+	const notify = useNotification();
+	const navigate = useNavigate();
 	const [form] = Form.useForm<ProductFormValues>();
 	const queryClient = useQueryClient();
-	const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-		null
-	);
-	const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-	// 1. Fetch all categories
-	const { data: categories, isLoading: loadingCategories } = useQuery<
-		Category[]
+	const [selectedCategoryId, setSelectedCategoryId] = useState<
+		string | undefined
+	>(undefined);
+	const [fileList, setFileList] = useState<UploadFile[]>([]);
+	console.log('File ist : ', fileList);
+	// 0) If editing, fetch current product
+	const { data: existingProduct, isLoading: loadingProduct } =
+		useQuery<Product>({
+			queryKey: ['products', 'detail', id],
+			queryFn: async () => {
+				const res = await fetchProductById(id!);
+				return res.data.data as Product;
+			},
+			enabled: isEdit,
+			staleTime: 5 * 60 * 1000,
+		});
+
+	// 1) Fetch CategoryListItem[] for picker
+	const { data: categoryList, isLoading: loadingList } = useQuery<
+		CategoryListItem[]
 	>({
-		queryKey: ['categories'],
-		queryFn: () => fetchCategories().then((res) => res.data.data),
+		queryKey: ['categories', 'list'],
+		queryFn: async () => {
+			const res = await fetchCategoriesList();
+			return res.data.data as CategoryListItem[];
+		},
+		staleTime: 5 * 60 * 1000,
 	});
 
-	// 2. Product mutation
-	const mutation = useMutation({
-		mutationFn: (formData: FormData) => createProduct(formData),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['products'] });
+	// 2) Fetch full Category for dynamic fields when category is selected
+	const { data: selectedCategory, isLoading: loadingDetail } =
+		useQuery<Category>({
+			queryKey: ['categories', 'detail', selectedCategoryId],
+			queryFn: async () => {
+				const res = await fetchCategoryById(selectedCategoryId!);
+				return res.data.data as Category;
+			},
+			enabled: !!selectedCategoryId,
+			staleTime: 5 * 60 * 1000,
+		});
+
+	// When existing product arrives, prefill form and set selectedCategoryId
+	useEffect(() => {
+		if (existingProduct) {
+			form.setFieldsValue({
+				name: existingProduct.name,
+				description: existingProduct.description,
+				categoryId: existingProduct.categoryId,
+				isPublished: existingProduct.isPublished,
+				// priceConfiguration and attributes are dynamic and will be user-entered again,
+				// unless you want to pre-map them. For simplicity, leave them unset here.
+			});
+			setSelectedCategoryId(existingProduct.categoryId);
+		} else if (!isEdit) {
 			form.resetFields();
-			setFileList([]);
-			setSelectedCategory(null);
-			message.success('Product created');
+			form.setFieldsValue({ isPublished: true });
+			setSelectedCategoryId(undefined);
+		}
+	}, [existingProduct, isEdit, form]);
+	useEffect(() => {
+		if (isEdit && existingProduct?.imageUrl) {
+			// Prefill Upload with existing image for preview (status 'done' to show as uploaded)
+			setFileList([
+				{
+					uid: '-1',
+					name: 'current-image',
+					status: 'done',
+					url: existingProduct.imageUrl,
+				},
+			]);
+		}
+	}, [isEdit, existingProduct]);
+	// Reset dependent fields whenever category changes manually
+	useEffect(() => {
+		form.setFieldsValue({
+			priceConfiguration: undefined,
+			attributes: undefined,
+		});
+	}, [selectedCategoryId, form]);
+
+	// CREATE or UPDATE mutation
+	const mutation = useMutation({
+		mutationFn: async (formData: FormData) => {
+			return isEdit
+				? updateProduct(id!, formData)
+				: createProduct(formData);
+		},
+		onSuccess: (res) => {
+			// Invalidate lists and specific detail
+			console.log('response from update product', res.data);
+			queryClient.invalidateQueries({ queryKey: ['products'] });
+			if (isEdit)
+				queryClient.invalidateQueries({
+					queryKey: ['products', 'detail', id],
+				});
+			notify('success', isEdit ? 'Product updated' : 'Product created');
+			navigate('/products');
 		},
 		onError: (err: unknown) => {
 			console.error(err);
-			message.error('Failed to create product');
+			notify(
+				'error',
+				isEdit ? 'Failed to update product' : 'Failed to create product'
+			);
 		},
 	});
 
 	const handleSubmit = (values: ProductFormValues) => {
-		if (!selectedCategory) return;
-
-		// --- Build priceConfiguration as Map<string, ProductPriceConfiguration>
+		if (!selectedCategoryId || !selectedCategory) return;
+		console.log(values);
+		// Build priceConfiguration Map
 		const priceConfiguration = new Map<string, ProductPriceConfiguration>();
 
 		Object.entries(selectedCategory.priceConfiguration).forEach(
 			([groupKey, cfg]) => {
-				// In the UI, each group can be either:
-				// - A Select of options => we receive a string key that should map to a number later
-				// - An InputNumber => we receive a single number for this group
 				const fieldVal = values.priceConfiguration?.[groupKey];
-
-				let availableOptionsMap = new Map<string, number>();
+				const availableOptionsMap = new Map<string, number>();
 
 				if (
 					fieldVal &&
 					typeof fieldVal === 'object' &&
 					!Array.isArray(fieldVal)
 				) {
-					// Case: Record<string, string | number> (multiple options)
 					const optionEntries: [string, number][] = Object.entries(
 						fieldVal as Record<string, string | number>
 					).map(([opt, val]) => [opt, Number(val)]);
-					availableOptionsMap = new Map<string, number>(
-						optionEntries
-					);
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+					optionEntries.forEach(([k, v]) => {
+						if (Number.isFinite(v))
+							availableOptionsMap.set(groupKey, v);
+					});
 				} else if (
 					typeof fieldVal === 'string' ||
 					typeof fieldVal === 'number'
 				) {
-					// Case: single numeric value for the group (e.g., base price)
-					// Use a canonical key like "base" or the selected option as the key
-					const keyForSingle =
-						typeof fieldVal === 'string' ? fieldVal : 'base';
+					// const keyForSingle = typeof fieldVal === "string" ? fieldVal : "base";
 					const numVal = Number(fieldVal);
-					if (!Number.isFinite(numVal)) {
-						console.warn(
-							`Invalid numeric value for ${groupKey}:`,
-							fieldVal
-						);
-					} else {
-						availableOptionsMap.set(keyForSingle, numVal);
-					}
+					if (Number.isFinite(numVal))
+						availableOptionsMap.set(groupKey, numVal);
 				}
 
-				const vals: ProductPriceConfiguration = {
+				priceConfiguration.set(groupKey, {
 					priceType: cfg.priceType,
 					availableOptions: availableOptionsMap,
-				};
-
-				priceConfiguration.set(groupKey, vals);
+				});
 			}
 		);
 
-		// --- Build attributes
+		// Build attributes
 		const attributes: ProductAttribute[] =
 			(selectedCategory.attributes ?? []).map((attr) => {
 				const raw = values.attributes?.[attr.name];
-
 				let value: string | number | boolean;
-
-				if (attr.widgetType === 'switch') {
-					value = Boolean(raw);
-				} else if (attr.widgetType === 'radio') {
+				if (attr.widgetType === 'switch') value = Boolean(raw);
+				else if (attr.widgetType === 'radio')
 					value = typeof raw === 'number' ? raw : String(raw ?? '');
-				} else {
-					value = raw as string | number | boolean;
-				}
-
-				return {
-					name: attr.name,
-					value,
-				};
+				else value = raw as string | number | boolean;
+				return { name: attr.name, value };
 			}) || [];
 
-		// --- Build payload (domain model with Maps)
+		// Domain model
 		const payload: Omit<Product, '_id' | 'createdAt' | 'updatedAt'> = {
 			name: values.name,
 			description: values.description,
 			tenantId: '1',
-			categoryId: selectedCategory.id!,
+			categoryId: selectedCategoryId,
 			priceConfiguration,
 			attributes,
 			isPublished: values.isPublished,
 		};
 
-		// --- Serialize for transport: convert Maps to objects
+		// Serialize Maps
 		const serializablePayload = {
 			...payload,
 			priceConfiguration: priceCfgToSerializable(priceConfiguration),
 		};
 
-		// ✅ Create FormData for multipart
+		// FormData
 		const formData = new FormData();
 
-		if (fileList.length > 0) {
-			const rawFile = fileList[0].originFileObj as File | undefined;
-			if (rawFile) {
+		formData.append('data', JSON.stringify(serializablePayload));
+		// In handleSubmit before mutation.mutate(formData):
+		if (values.image && values.image.length > 0) {
+			const f = values.image[0];
+			// Only send if a new file was picked (originFileObj exists)
+			if (f.originFileObj) {
+				const rawFile = f.originFileObj as File;
 				formData.append('image', rawFile, rawFile.name);
 			}
 		}
 
-		formData.append('data', JSON.stringify(serializablePayload));
-
-		// Debug
-		console.log('📦 Final Payload (serialized):', serializablePayload);
 		logFormData(formData);
-
-		// --- Call mutation
 		mutation.mutate(formData);
 	};
 
-	if (loadingCategories) return <div>Loading categories...</div>;
+	if (isEdit && loadingProduct) {
+		return (
+			<div
+				style={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					padding: 24,
+				}}
+			>
+				<Spin />
+			</div>
+		);
+	}
+
+	if (loadingList) return <div>Loading categories...</div>;
 
 	return (
 		<Card>
-			<Title level={4}>Create Product</Title>
-			text
+			<Title level={4}>
+				{isEdit ? 'Update Product' : 'Create Product'}
+			</Title>
+
 			<Form<ProductFormValues>
 				form={form}
 				layout="vertical"
@@ -236,7 +310,6 @@ export default function CreateProductForm() {
 				id="product-form"
 				initialValues={{ isPublished: true }}
 			>
-				{/* Basic Info */}
 				<Form.Item
 					label="Product Name"
 					name="name"
@@ -245,7 +318,6 @@ export default function CreateProductForm() {
 					<Input placeholder="e.g. Pizza Deluxe" />
 				</Form.Item>
 
-				{/* Category Selector */}
 				<Form.Item
 					label="Category"
 					name="categoryId"
@@ -253,19 +325,16 @@ export default function CreateProductForm() {
 				>
 					<Select
 						placeholder="Select a category"
-						onChange={(id) => {
-							const cat =
-								categories?.find((c) => c.id === id) || null;
-							setSelectedCategory(cat);
-							// Reset dependent fields when category changes
-							form.setFieldsValue({
-								priceConfiguration: undefined,
-								attributes: undefined,
-							});
-						}}
+						onChange={(val: string) => setSelectedCategoryId(val)}
+						loading={loadingList}
+						value={selectedCategoryId}
+						disabled={isEdit && Boolean(existingProduct)} // disable if editing to avoid schema mismatch; enable if changing category is allowed
 					>
-						{categories?.map((cat) => (
-							<Select.Option key={cat.id} value={cat.id}>
+						{(categoryList ?? []).map((cat) => (
+							<Select.Option
+								key={cat.id ?? cat.name}
+								value={cat.id!}
+							>
 								{cat.name}
 							</Select.Option>
 						))}
@@ -288,9 +357,16 @@ export default function CreateProductForm() {
 					name="image"
 					valuePropName="fileList"
 					getValueFromEvent={(e) => e?.fileList}
-					rules={[
-						{ required: true, message: 'Please upload an image' },
-					]}
+					rules={
+						isEdit
+							? [] // optional on update
+							: [
+									{
+										required: true,
+										message: 'Please upload an image',
+									},
+								]
+					}
 				>
 					<Upload
 						listType="picture-card"
@@ -305,88 +381,109 @@ export default function CreateProductForm() {
 					</Upload>
 				</Form.Item>
 
-				{/* Price Configurations */}
-				{selectedCategory && (
+				{/* Dynamic fields from category detail */}
+				{selectedCategoryId && (
 					<>
-						<Title level={5}>Price Configurations</Title>
-						{Object.entries(
-							selectedCategory.priceConfiguration
-						).map(([key, cfg]) => (
-							<Form.Item
-								key={key}
-								label={key}
-								name={['priceConfiguration', key]}
-								tooltip={
-									cfg.priceType === 'base'
-										? 'Base price or option pricing for this group'
-										: 'Additional price added on top'
-								}
+						{loadingDetail && (
+							<div
+								style={{
+									display: 'flex',
+									justifyContent: 'center',
+									alignItems: 'center',
+									padding: 16,
+								}}
 							>
-								{cfg.availableOptions &&
-								cfg.availableOptions.length > 0 ? (
-									// If you want multiple option prices, render one InputNumber per option instead of a single Select.
-									// Here, Select means you’re choosing one option; price will be assigned under that key.
-									<Select
-										placeholder={`Select ${key} option`}
-									>
-										{cfg.availableOptions.map((opt) => (
-											<Select.Option
-												key={opt}
-												value={opt}
-											>
-												{opt}
-											</Select.Option>
-										))}
-									</Select>
-								) : (
-									<InputNumber
-										min={0}
-										style={{ width: '100%' }}
-										placeholder={`Enter ${cfg.priceType} price`}
-									/>
-								)}
-							</Form.Item>
-						))}
+								<Spin size="small" />
+							</div>
+						)}
 
-						{/* Attributes */}
-						<Title level={5}>Attributes</Title>
-						{selectedCategory.attributes.map((attr) => (
-							<Form.Item
-								key={attr.name}
-								label={attr.name}
-								name={['attributes', attr.name]}
-								valuePropName={
-									attr.widgetType === 'switch'
-										? 'checked'
-										: 'value'
-								}
-								initialValue={
-									attr.widgetType === 'switch'
-										? Boolean(attr.defaultValue)
-										: (attr.defaultValue ?? undefined)
-								}
-							>
-								{attr.widgetType === 'radio' ? (
-									<Select placeholder={`Select ${attr.name}`}>
-										{attr.availableOptions.map((opt) => (
-											<Select.Option
-												key={opt}
-												value={opt}
+						{selectedCategory && (
+							<>
+								<Title level={5}>Price Configurations</Title>
+								{Object.entries(
+									selectedCategory.priceConfiguration
+								).map(([key, cfg]) => (
+									<Form.Item
+										key={key}
+										label={key}
+										name={['priceConfiguration', key]}
+										tooltip={
+											cfg.priceType === 'base'
+												? 'Base price or option pricing for this group'
+												: 'Additional price added on top'
+										}
+									>
+										{cfg.availableOptions &&
+										cfg.availableOptions.length > 0 ? (
+											<Select
+												placeholder={`Select ${key} option`}
 											>
-												{opt}
-											</Select.Option>
-										))}
-									</Select>
-								) : attr.widgetType === 'switch' ? (
-									<Switch
-										checkedChildren="Yes"
-										unCheckedChildren="No"
-									/>
-								) : (
-									<Input placeholder="Enter value" />
-								)}
-							</Form.Item>
-						))}
+												{cfg.availableOptions.map(
+													(opt) => (
+														<Select.Option
+															key={opt}
+															value={opt}
+														>
+															{opt}
+														</Select.Option>
+													)
+												)}
+											</Select>
+										) : (
+											<InputNumber
+												min={0}
+												style={{ width: '100%' }}
+												placeholder={`Enter ${cfg.priceType} price`}
+											/>
+										)}
+									</Form.Item>
+								))}
+
+								<Title level={5}>Attributes</Title>
+								{selectedCategory.attributes.map((attr) => (
+									<Form.Item
+										key={attr.name}
+										label={attr.name}
+										name={['attributes', attr.name]}
+										valuePropName={
+											attr.widgetType === 'switch'
+												? 'checked'
+												: 'value'
+										}
+										initialValue={
+											attr.widgetType === 'switch'
+												? Boolean(attr.defaultValue)
+												: (attr.defaultValue ??
+													undefined)
+										}
+									>
+										{attr.widgetType === 'radio' ? (
+											<Select
+												placeholder={`Select ${attr.name}`}
+											>
+												{attr.availableOptions.map(
+													(opt) => (
+														<Select.Option
+															key={opt}
+															value={opt}
+														>
+															{opt}
+														</Select.Option>
+													)
+												)}
+											</Select>
+										) : attr.widgetType === 'switch' ? (
+											<Switch
+												checkedChildren="Yes"
+												unCheckedChildren="No"
+											/>
+										) : (
+											<Input placeholder="Enter value" />
+										)}
+									</Form.Item>
+								))}
+							</>
+						)}
 					</>
 				)}
 
@@ -394,6 +491,7 @@ export default function CreateProductForm() {
 					label="Published"
 					name="isPublished"
 					valuePropName="checked"
+					initialValue={!isEdit}
 				>
 					<Switch checkedChildren="Yes" unCheckedChildren="No" />
 				</Form.Item>

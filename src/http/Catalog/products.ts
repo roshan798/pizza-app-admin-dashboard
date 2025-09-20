@@ -14,8 +14,8 @@ export const createProduct = async (payload: unknown) => {
 		headers: { 'Content-Type': 'multipart/form-data' },
 	});
 };
-export const updateProduct = async (payload: unknown) => {
-	return await api.post(CONFIG.products.url, payload, {
+export const updateProduct = async (id: string, payload: unknown) => {
+	return await api.put(CONFIG.products.url + '/' + id, payload, {
 		headers: { 'Content-Type': 'multipart/form-data' },
 	});
 };

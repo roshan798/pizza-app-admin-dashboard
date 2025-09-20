@@ -37,7 +37,7 @@ export default function Products() {
 				navigate(`/products/${id}`);
 				break;
 			case 'edit':
-				navigate(`/products/${id}/edit`);
+				navigate(`/products/edit/${id}`);
 				break;
 			case 'delete':
 				console.log('Delete product', id);

@@ -105,8 +105,8 @@ export const router = createBrowserRouter([
 							},
 							{
 								path: 'products/edit/:id',
-								Component: CategoryFormPage,
-							}, // ⚠️ Seems off — "edit product" should probably have its own form
+								Component: CreateProductForm,
+							},
 							{
 								path: 'products/:id',
 								Component: ProductPreviewCustomer,

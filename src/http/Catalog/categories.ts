@@ -4,6 +4,9 @@ import CONFIG from '../../config';
 export const fetchCategories = async () => {
 	return await api.get(CONFIG.categories.url);
 };
+export const fetchCategoriesList = async () => {
+	return await api.get(CONFIG.categories.list);
+};
 
 export const fetchCategoryById = async (id: string) => {
 	return await api.get(CONFIG.categories.url + '/' + id);
