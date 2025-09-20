@@ -11,11 +11,11 @@ import {
 import { useThemeStore } from '../store/useThemeStore';
 
 const sidebarLinks = [
-	{ to: "/", label: "Dashboard", icon: <HomeOutlined /> },
-	{ to: "/users", label: "Users", icon: <TeamOutlined /> },
-	{ to: "/tenants", label: "Tenants", icon: <ApartmentOutlined /> },
-	{ to: "/categories", label: "Categories", icon: <AppstoreOutlined /> },
-	{ to: "/products", label: "Products", icon: <ShoppingOutlined /> },
+	{ to: '/', label: 'Dashboard', icon: <HomeOutlined /> },
+	{ to: '/users', label: 'Users', icon: <TeamOutlined /> },
+	{ to: '/tenants', label: 'Tenants', icon: <ApartmentOutlined /> },
+	{ to: '/categories', label: 'Categories', icon: <AppstoreOutlined /> },
+	{ to: '/products', label: 'Products', icon: <ShoppingOutlined /> },
 ];
 
 const Sidebar: React.FC = () => {

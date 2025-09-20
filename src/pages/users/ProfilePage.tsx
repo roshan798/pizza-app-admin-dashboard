@@ -24,7 +24,6 @@ interface ApiResponse<T> {
 	data: T;
 }
 
-
 async function updateSelf(
 	values: ProfileFormValues
 ): Promise<ApiResponse<{ user: User }>> {
