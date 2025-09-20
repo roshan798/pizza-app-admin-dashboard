@@ -1,9 +1,9 @@
 import type { AxiosResponse } from 'axios';
-import CONFIG from '../config.ts';
-import type { LoginPayload, SignupPayload } from '../types/Payloads.ts';
-import auth from './index.ts';
-import type { User } from '../store/userStore.ts';
-import type { SuccessResponse } from '../types/index.ts';
+import CONFIG from '../../config.ts';
+import type { LoginPayload, SignupPayload } from '../../types/Payloads.ts';
+import type { User } from '../../store/userStore.ts';
+import type { SuccessResponse } from '../../types/index.ts';
+import auth from '../index.ts';
 
 export const login = async (payload: LoginPayload) => {
 	return await auth.post(CONFIG.auth.login, payload);

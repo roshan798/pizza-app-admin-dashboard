@@ -4,7 +4,7 @@ import { useNotification } from '../../hooks/useNotification';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { UploadOutlined, SaveOutlined } from '@ant-design/icons';
 import { type RcFile } from 'antd/es/upload/interface';
-import { self } from '../../http/auth';
+import { self } from '../../http/Auth/auth';
 
 const { Title } = Typography;
 
@@ -24,23 +24,6 @@ interface ApiResponse<T> {
 	data: T;
 }
 
-// --- Dummy API functions ---
-// async function self(): Promise<ApiResponse<{ user: User }>> {
-//     // simulate server delay
-//     await new Promise((res) => setTimeout(res, 500));
-//     return {
-//         data: {
-//             user: {
-//                 id: "1",
-//                 firstName: "John",
-//                 lastName: "Doe",
-//                 email: "john@example.com",
-//                 role: "customer",
-//                 phone: "9876543210",
-//             },
-//         },
-//     };
-// }
 
 async function updateSelf(
 	values: ProfileFormValues

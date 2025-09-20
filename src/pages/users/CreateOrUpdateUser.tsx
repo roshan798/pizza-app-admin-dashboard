@@ -23,8 +23,8 @@ import {
 	getUserById,
 	updateUserById,
 	type UpdateUserPayload,
-} from '../../http/users';
-import { getAllTenants } from '../../http/tenants';
+} from '../../http/Auth/users';
+import { getAllTenants } from '../../http/Auth/tenants';
 import type { User } from '../../store/userStore';
 import type { ApiError } from '../../types';
 

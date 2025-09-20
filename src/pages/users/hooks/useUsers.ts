@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { useNotification } from '../../../hooks/useNotification';
 import type { ApiError } from '../../../types';
 import { mapServerFormErrors } from '../../../utils';
-import { deleteUserById, getAllUsers } from '../../../http/users';
+import { deleteUserById, getAllUsers } from '../../../http/Auth/users';
 import type { User } from '../../../store/userStore';
 
 export const useUsers = () => {

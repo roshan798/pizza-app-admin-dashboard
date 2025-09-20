@@ -10,7 +10,7 @@ import { useThemeStore } from '../store/useThemeStore';
 const { Sider, Content } = Layout;
 
 const MainLayout = () => {
-	const [sideCollapsed, setSideCollapsed] = useState(false);
+	const [sideCollapsed, setSideCollapsed] = useState(true);
 	const { resolved: theme } = useThemeStore();
 	return (
 		<Layout style={{ minHeight: '100vh' }}>

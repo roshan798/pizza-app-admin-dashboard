@@ -16,6 +16,12 @@ import Users from '../pages/users/Users';
 import CreateOrUpdateUser from '../pages/users/CreateOrUpdateUser';
 import CreateOrUpdateTenant from '../pages/tenants/CreateOrUpdateTenant';
 import ProfilePage from '../pages/users/ProfilePage';
+import CategoriesPage from '../pages/Catogories/Categories';
+import Products from '../pages/Products/Products';
+import CategoryDetails from '../pages/Catogories/CategoryDetails';
+import CategoryFormPage from '../pages/Catogories/CategoryFormPage';
+import CreateProductForm from '../pages/Products/CreateProduct';
+import ProductPreviewCustomer from '../pages/Products/ProductPreview';
 
 export const router = createBrowserRouter([
 	{
@@ -78,6 +84,40 @@ export const router = createBrowserRouter([
 								path: 'tenants/edit/:id',
 								element:
 									React.createElement(CreateOrUpdateTenant),
+							},
+							{
+								path: 'categories',
+								element: React.createElement(CategoriesPage),
+							},
+							{
+								path: 'categories/:id',
+								element: React.createElement(CategoryDetails),
+							},
+							{
+								path: 'categories/create',
+								element: React.createElement(CategoryFormPage),
+							},
+							{
+								path: 'categories/edit/:id',
+								element: React.createElement(CategoryFormPage),
+							},
+							{
+								path: 'products',
+								element: React.createElement(Products),
+							},
+							{
+								path: 'products/create',
+								element: React.createElement(CreateProductForm),
+							},
+							{
+								path: 'products/edit/:id',
+								element: React.createElement(CategoryFormPage),
+							},
+							{
+								path: 'products/:id',
+								element: React.createElement(
+									ProductPreviewCustomer
+								),
 							},
 						],
 					},

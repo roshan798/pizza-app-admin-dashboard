@@ -1,18 +1,23 @@
 const CONFIG = {
-	baseUrl: 'http://localhost:8080',
+	baseUrl: 'http://localhost:8000/api',
 	auth: {
-		url: '/auth/auth',
-		login: '/auth/login',
-		signup: '/auth/register',
-		self: '/auth/self',
-		logout: '/auth/logout',
-		refresh: '/auth/refresh',
+		login: '/auth/auth/login',
+		signup: '/auth/auth/register',
+		self: '/auth/auth/self',
+		logout: '/auth/auth/logout',
+		refresh: '/auth/auth/refresh',
 	},
 	users: {
-		url: '/users',
+		url: '/auth/users',
 	},
 	tenants: {
-		url: '/tenants',
+		url: '/auth/tenants',
+	},
+	categories: {
+		url: '/catalog/categories',
+	},
+	products: {
+		url: '/catalog/products',
 	},
 };
 export default CONFIG;

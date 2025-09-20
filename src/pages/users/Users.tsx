@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import ConfirmDeleteModal from './components/ConfirmDeleteModal';
 import TenantModal from '../tenants/components/TenantModal';
 import UserTable from './components/UsersTable';
-import { getTenantById } from '../../http/tenants';
+import { getTenantById } from '../../http/Auth/tenants';
 import { useUsers } from './hooks/useUsers';
 import type { User } from '../../store/userStore';
 import type { Tenant } from '../tenants/types/types';

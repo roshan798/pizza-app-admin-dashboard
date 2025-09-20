@@ -1,6 +1,6 @@
-import api from '.';
-import CONFIG from '../config';
-import type { Tenant } from '../pages/tenants/types/types';
+import api from '../index';
+import CONFIG from '../../config';
+import type { Tenant } from '../../pages/tenants/types/types';
 
 export const getAllTenants = async () => {
 	return await api.get(CONFIG.tenants.url);

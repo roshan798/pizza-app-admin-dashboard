@@ -3,19 +3,19 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'antd';
 import {
 	HomeOutlined,
-	ShoppingCartOutlined,
-	UsergroupAddOutlined,
-	BarChartOutlined,
-	SettingOutlined,
+	TeamOutlined,
+	ApartmentOutlined,
+	AppstoreOutlined,
+	ShoppingOutlined,
 } from '@ant-design/icons';
 import { useThemeStore } from '../store/useThemeStore';
 
 const sidebarLinks = [
-	{ to: '/', label: 'Dashboard', icon: <HomeOutlined /> },
-	{ to: '/users', label: 'Users', icon: <UsergroupAddOutlined /> },
-	{ to: '/tenants', label: 'Tenants', icon: <ShoppingCartOutlined /> },
-	{ to: '/reports', label: 'Reports', icon: <BarChartOutlined /> },
-	{ to: '/settings', label: 'Settings', icon: <SettingOutlined /> },
+	{ to: "/", label: "Dashboard", icon: <HomeOutlined /> },
+	{ to: "/users", label: "Users", icon: <TeamOutlined /> },
+	{ to: "/tenants", label: "Tenants", icon: <ApartmentOutlined /> },
+	{ to: "/categories", label: "Categories", icon: <AppstoreOutlined /> },
+	{ to: "/products", label: "Products", icon: <ShoppingOutlined /> },
 ];
 
 const Sidebar: React.FC = () => {

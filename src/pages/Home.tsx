@@ -19,7 +19,7 @@ import {
 	ArrowDownOutlined,
 } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
-import { getAllUsers } from '../http/users';
+import { getAllUsers } from '../http/Auth/users';
 import type { User } from '../store/userStore';
 
 const { Title } = Typography;

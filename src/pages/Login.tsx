@@ -1,12 +1,12 @@
 import { Form, Input, Button, Typography, Card, Row, Col, Space } from 'antd';
 import { MailOutlined, LockOutlined, LoginOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../http/auth';
 import { useUserStore } from '../store/userStore';
 import { useNotification } from '../hooks/useNotification';
 import { useMutation } from '@tanstack/react-query';
 import { mapServerFormErrors } from '../utils';
 import type { ApiError } from '../types';
+import { login } from '../http/Auth/auth';
 
 const { Title, Text } = Typography;
 

@@ -5,7 +5,7 @@ import {
 	deleteTenant,
 	getAllTenants,
 	updateTenant,
-} from '../../../http/tenants';
+} from '../../../http/Auth/tenants';
 
 const fetchTenants = async (): Promise<Tenant[]> => {
 	const res = await getAllTenants();

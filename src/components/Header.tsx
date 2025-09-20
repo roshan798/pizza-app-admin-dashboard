@@ -8,7 +8,7 @@ import {
 	MoonOutlined,
 	LaptopOutlined,
 } from '@ant-design/icons';
-import { logout as logoutFromServer } from '../http/auth';
+import { logout as logoutFromServer } from '../http/Auth/auth';
 import { useUserStore } from '../store/userStore';
 import { useNotification } from '../hooks/useNotification';
 import { useQueryClient } from '@tanstack/react-query';

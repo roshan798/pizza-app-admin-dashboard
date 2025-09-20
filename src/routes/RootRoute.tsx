@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { self } from '../http/auth';
+import { self } from '../http/Auth/auth';
 import { useUserStore } from '../store/userStore';
 import { Spin } from 'antd';
 

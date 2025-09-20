@@ -1,6 +1,6 @@
-import api from '.';
-import CONFIG from '../config';
-import type { Roles } from '../types';
+import api from '../index';
+import CONFIG from '../../config';
+import type { Roles } from '../../types';
 
 export const getAllUsers = async () => {
 	return await api.get(CONFIG.users.url);

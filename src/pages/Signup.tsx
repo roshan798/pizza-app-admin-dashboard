@@ -16,12 +16,12 @@ import {
 	TeamOutlined,
 } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
-import { signup } from '../http/auth';
 import type { Roles, ApiError } from '../types';
 import { useMutation } from '@tanstack/react-query';
 import { useNotification } from '../hooks/useNotification';
 import { mapServerFormErrors } from '../utils';
 import type { SignupPayload } from '../types/Payloads';
+import { signup } from '../http/Auth/auth';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
