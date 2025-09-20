@@ -1,10 +1,10 @@
 import './index.css';
-import { ConfigProvider, theme as antdTheme } from 'antd';
+import { ConfigProvider, Spin, theme as antdTheme } from 'antd';
 import { NotificationProvider } from './context/NotificationProvider.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes/routes.ts';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useThemeStore } from './store/useThemeStore.ts';
 
 const query = new QueryClient();
@@ -38,7 +38,23 @@ const App = () => {
 		>
 			<NotificationProvider>
 				<QueryClientProvider client={query}>
-					<RouterProvider router={router} />
+					<Suspense
+						fallback={
+							<div
+								className="fallback-spinner"
+								style={{
+									display: 'flex',
+									height: '100vh',
+									justifyContent: 'center',
+									alignItems: 'center',
+								}}
+							>
+								<Spin size="large" />
+							</div>
+						}
+					>
+						<RouterProvider router={router} />
+					</Suspense>
 				</QueryClientProvider>
 			</NotificationProvider>
 		</ConfigProvider>

@@ -1,49 +1,59 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 
-import RootRoute from './RootRoute';
-import AdminRoute from './AdminRoute';
-import AuthLayout from '../layouts/AuthLayout';
-import MainLayout from '../layouts/MainLayout';
-import Login from '../pages/Login';
-import Signup from '../pages/Signup';
-import Home from '../pages/Home';
+// Lazy imports
+const RootRoute = lazy(() => import('./RootRoute'));
+const AdminRoute = lazy(() => import('./AdminRoute'));
+const AuthRoute = lazy(() => import('./AuthRoute'));
 
-import ErrorPage from '../pages/ErrorPage';
-import AuthRoute from './AuthRoute';
-import Tenants from '../pages/tenants/Tenants';
-import Users from '../pages/users/Users';
-import CreateOrUpdateUser from '../pages/users/CreateOrUpdateUser';
-import CreateOrUpdateTenant from '../pages/tenants/CreateOrUpdateTenant';
-import ProfilePage from '../pages/users/ProfilePage';
-import CategoriesPage from '../pages/Catogories/Categories';
-import Products from '../pages/Products/Products';
-import CategoryDetails from '../pages/Catogories/CategoryDetails';
-import CategoryFormPage from '../pages/Catogories/CategoryFormPage';
-import CreateProductForm from '../pages/Products/CreateProduct';
-import ProductPreviewCustomer from '../pages/Products/ProductPreview';
+const AuthLayout = lazy(() => import('../layouts/AuthLayout'));
+const MainLayout = lazy(() => import('../layouts/MainLayout'));
+
+const Login = lazy(() => import('../pages/Login'));
+const Signup = lazy(() => import('../pages/Signup'));
+const Home = lazy(() => import('../pages/Home'));
+
+const ErrorPage = lazy(() => import('../pages/ErrorPage'));
+
+const Tenants = lazy(() => import('../pages/tenants/Tenants'));
+const Users = lazy(() => import('../pages/users/Users'));
+const CreateOrUpdateUser = lazy(
+	() => import('../pages/users/CreateOrUpdateUser')
+);
+const CreateOrUpdateTenant = lazy(
+	() => import('../pages/tenants/CreateOrUpdateTenant')
+);
+const ProfilePage = lazy(() => import('../pages/users/ProfilePage'));
+
+const CategoriesPage = lazy(() => import('../pages/Catogories/Categories'));
+const CategoryDetails = lazy(
+	() => import('../pages/Catogories/CategoryDetails')
+);
+const CategoryFormPage = lazy(
+	() => import('../pages/Catogories/CategoryFormPage')
+);
+
+const Products = lazy(() => import('../pages/Products/Products'));
+const CreateProductForm = lazy(() => import('../pages/Products/CreateProduct'));
+const ProductPreviewCustomer = lazy(
+	() => import('../pages/Products/ProductPreview')
+);
 
 export const router = createBrowserRouter([
 	{
 		path: '/',
-		element: React.createElement(RootRoute),
+		Component: RootRoute,
 		errorElement: React.createElement(ErrorPage),
 		children: [
 			// --- Public routes (login/signup) ---
 			{
-				element: React.createElement(AuthRoute),
+				Component: AuthRoute,
 				children: [
 					{
-						element: React.createElement(AuthLayout),
+						Component: AuthLayout,
 						children: [
-							{
-								path: 'login',
-								element: React.createElement(Login),
-							},
-							{
-								path: 'signup',
-								element: React.createElement(Signup),
-							},
+							{ path: 'login', Component: Login },
+							{ path: 'signup', Component: Signup },
 						],
 					},
 				],
@@ -51,86 +61,68 @@ export const router = createBrowserRouter([
 
 			// --- Admin routes ---
 			{
-				element: React.createElement(MainLayout),
+				Component: MainLayout,
 				errorElement: React.createElement(ErrorPage),
 				children: [
 					{
-						element: React.createElement(AdminRoute),
+						Component: AdminRoute,
 						children: [
-							{
-								path: 'users',
-								element: React.createElement(Users),
-							},
+							{ path: 'users', Component: Users },
 							{
 								path: 'users/create',
-								element:
-									React.createElement(CreateOrUpdateUser),
+								Component: CreateOrUpdateUser,
 							},
 							{
 								path: 'users/edit/:userId',
-								element:
-									React.createElement(CreateOrUpdateUser),
+								Component: CreateOrUpdateUser,
 							},
-							{
-								path: 'tenants',
-								element: React.createElement(Tenants),
-							},
+							{ path: 'tenants', Component: Tenants },
 							{
 								path: 'tenants/create',
-								element:
-									React.createElement(CreateOrUpdateTenant),
+								Component: CreateOrUpdateTenant,
 							},
 							{
 								path: 'tenants/edit/:id',
-								element:
-									React.createElement(CreateOrUpdateTenant),
+								Component: CreateOrUpdateTenant,
 							},
-							{
-								path: 'categories',
-								element: React.createElement(CategoriesPage),
-							},
+							{ path: 'categories', Component: CategoriesPage },
 							{
 								path: 'categories/:id',
-								element: React.createElement(CategoryDetails),
+								Component: CategoryDetails,
 							},
 							{
 								path: 'categories/create',
-								element: React.createElement(CategoryFormPage),
+								Component: CategoryFormPage,
 							},
 							{
 								path: 'categories/edit/:id',
-								element: React.createElement(CategoryFormPage),
+								Component: CategoryFormPage,
 							},
-							{
-								path: 'products',
-								element: React.createElement(Products),
-							},
+							{ path: 'products', Component: Products },
 							{
 								path: 'products/create',
-								element: React.createElement(CreateProductForm),
+								Component: CreateProductForm,
 							},
 							{
 								path: 'products/edit/:id',
-								element: React.createElement(CategoryFormPage),
-							},
+								Component: CategoryFormPage,
+							}, // ⚠️ Seems off — "edit product" should probably have its own form
 							{
 								path: 'products/:id',
-								element: React.createElement(
-									ProductPreviewCustomer
-								),
+								Component: ProductPreviewCustomer,
 							},
 						],
 					},
 				],
 			},
 
-			// --- Authenticated (any role, not necessarily admin) ---
+			// --- Authenticated (any role) ---
 			{
-				element: React.createElement(MainLayout),
+				Component: MainLayout,
 				errorElement: React.createElement(ErrorPage),
 				children: [
-					{ index: true, element: React.createElement(Home) },
-					{ path: 'me', element: React.createElement(ProfilePage) },
+					{ index: true, Component: Home },
+					{ path: 'me', Component: ProfilePage },
 				],
 			},
 		],

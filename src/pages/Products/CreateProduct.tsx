@@ -26,10 +26,10 @@ import { useState } from 'react';
 
 const { Title } = Typography;
 
-interface Props {
-	tenantId: string;
-	onSuccess?: () => void;
-}
+// interface Props {
+// 	tenantId: string;
+// 	onSuccess?: () => void;
+// }
 
 interface ProductFormValues {
 	name: string;
@@ -75,10 +75,7 @@ const priceCfgToSerializable = (pc: Map<string, ProductPriceConfiguration>) => {
 	return out;
 };
 
-export default function CreateProductForm({
-	tenantId = '1',
-	onSuccess,
-}: Props) {
+export default function CreateProductForm() {
 	const [form] = Form.useForm<ProductFormValues>();
 	const queryClient = useQueryClient();
 	const [selectedCategory, setSelectedCategory] = useState<Category | null>(
@@ -102,7 +99,6 @@ export default function CreateProductForm({
 			form.resetFields();
 			setFileList([]);
 			setSelectedCategory(null);
-			onSuccess?.();
 			message.success('Product created');
 		},
 		onError: (err: unknown) => {
@@ -191,7 +187,7 @@ export default function CreateProductForm({
 		const payload: Omit<Product, '_id' | 'createdAt' | 'updatedAt'> = {
 			name: values.name,
 			description: values.description,
-			tenantId,
+			tenantId: '1',
 			categoryId: selectedCategory.id!,
 			priceConfiguration,
 			attributes,
