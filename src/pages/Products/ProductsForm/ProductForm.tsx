@@ -17,6 +17,7 @@ import { PriceConfigurationsSection } from './sections/PriceConfigurations';
 import { AttributesSection } from './sections/Attributes';
 import type { ProductFormValues } from './useProductFormData';
 import { useNotification } from '../../../hooks/useNotification';
+import { TenantSection } from './sections/TenantSection';
 
 const { Title } = Typography;
 
@@ -212,6 +213,8 @@ export function ProductForm({
 					loadingList={loadingList}
 					disabledCategory={isEdit}
 				/>
+				{/* Tenant Section */}
+				<TenantSection />
 
 				<ImageUploadSection
 					isEdit={isEdit}

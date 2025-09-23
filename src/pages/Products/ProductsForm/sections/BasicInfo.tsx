@@ -1,4 +1,4 @@
-import { Form, Input, Select } from 'antd';
+import { Card, Form, Input, Select } from 'antd';
 import type { CategoryListItem } from '../../../../http/Catalog/types';
 
 interface Props {
@@ -17,7 +17,11 @@ export function BasicInfoSection({
 	disabledCategory,
 }: Props) {
 	return (
-		<>
+		<Card
+			title="Basic Information"
+			style={{ marginBottom: 24 }}
+			type="inner"
+		>
 			<Form.Item
 				label="Product Name"
 				name="name"
@@ -56,6 +60,6 @@ export function BasicInfoSection({
 					placeholder="Enter product description"
 				/>
 			</Form.Item>
-		</>
+		</Card>
 	);
 }

@@ -1,11 +1,10 @@
 import React, { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
+import ErrorPage from '../pages/ErrorPage';
 
 // Lazy imports
 const RootRoute = lazy(() => import('./RootRoute'));
-const AdminRoute = lazy(() => import('./AdminRoute'));
-const AuthRoute = lazy(() => import('./AuthRoute'));
-
 const AuthLayout = lazy(() => import('../layouts/AuthLayout'));
 const MainLayout = lazy(() => import('../layouts/MainLayout'));
 
@@ -13,7 +12,7 @@ const Login = lazy(() => import('../pages/Login'));
 const Signup = lazy(() => import('../pages/Signup'));
 const Home = lazy(() => import('../pages/Home'));
 
-const ErrorPage = lazy(() => import('../pages/ErrorPage'));
+const Unauthorized = lazy(() => import('../pages/Unauthorized'));
 
 const Tenants = lazy(() => import('../pages/tenants/Tenants'));
 const Users = lazy(() => import('../pages/users/Users'));
@@ -49,25 +48,71 @@ export const router = createBrowserRouter([
 		children: [
 			// --- Public routes (login/signup) ---
 			{
-				Component: AuthRoute,
+				Component: AuthLayout,
 				children: [
-					{
-						Component: AuthLayout,
-						children: [
-							{ path: 'login', Component: Login },
-							{ path: 'signup', Component: Signup },
-						],
-					},
+					{ path: 'login', Component: Login },
+					{ path: 'signup', Component: Signup },
+					{ path: 'unauthorized', Component: Unauthorized },
 				],
 			},
 
-			// --- Admin routes ---
+			// --- Authenticated (any role) ---
 			{
 				Component: MainLayout,
 				errorElement: React.createElement(ErrorPage),
 				children: [
 					{
-						Component: AdminRoute,
+						Component: ProtectedRoute,
+						children: [
+							{ index: true, Component: Home },
+							{ path: 'me', Component: ProfilePage },
+						],
+					},
+				],
+			},
+
+			// --- Admin/Manager shared routes ---
+			{
+				Component: MainLayout,
+				errorElement: React.createElement(ErrorPage),
+				children: [
+					{
+						element: React.createElement(ProtectedRoute, {
+							allowed: ['admin', 'manager'],
+						}),
+						children: [
+							{ path: 'products', Component: Products },
+							{
+								path: 'products/:id',
+								Component: ProductPreviewCustomer,
+							},
+							{
+								path: 'products/create',
+								Component: CreateProductForm,
+							},
+							{
+								path: 'products/edit/:id',
+								Component: CreateProductForm,
+							},
+							{ path: 'categories', Component: CategoriesPage },
+							{
+								path: 'categories/:id',
+								Component: CategoryDetails,
+							},
+						],
+					},
+				],
+			},
+
+			// --- Admin-only routes ---
+			{
+				Component: MainLayout,
+				errorElement: React.createElement(ErrorPage),
+				children: [
+					{
+						element: React.createElement(ProtectedRoute, {
+							allowed: ['admin'],
+						}),
 						children: [
 							{ path: 'users', Component: Users },
 							{
@@ -87,11 +132,6 @@ export const router = createBrowserRouter([
 								path: 'tenants/edit/:id',
 								Component: CreateOrUpdateTenant,
 							},
-							{ path: 'categories', Component: CategoriesPage },
-							{
-								path: 'categories/:id',
-								Component: CategoryDetails,
-							},
 							{
 								path: 'categories/create',
 								Component: CategoryFormPage,
@@ -100,31 +140,8 @@ export const router = createBrowserRouter([
 								path: 'categories/edit/:id',
 								Component: CategoryFormPage,
 							},
-							{ path: 'products', Component: Products },
-							{
-								path: 'products/create',
-								Component: CreateProductForm,
-							},
-							{
-								path: 'products/edit/:id',
-								Component: CreateProductForm,
-							},
-							{
-								path: 'products/:id',
-								Component: ProductPreviewCustomer,
-							},
 						],
 					},
-				],
-			},
-
-			// --- Authenticated (any role) ---
-			{
-				Component: MainLayout,
-				errorElement: React.createElement(ErrorPage),
-				children: [
-					{ index: true, Component: Home },
-					{ path: 'me', Component: ProfilePage },
 				],
 			},
 		],

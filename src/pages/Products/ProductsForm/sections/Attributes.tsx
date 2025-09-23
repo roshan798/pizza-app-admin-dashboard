@@ -1,4 +1,4 @@
-import { Form, Input, Select, Switch, Typography } from 'antd';
+import { Card, Form, Input, Select, Switch, Typography } from 'antd';
 import type { Category } from '../../../../http/Catalog/types';
 
 const { Title } = Typography;
@@ -11,7 +11,7 @@ export function AttributesSection({ category }: Props) {
 	if (!category) return null;
 
 	return (
-		<>
+		<Card title="Attributes" style={{ marginBottom: 24 }} type="inner">
 			<Title level={5}>Attributes</Title>
 			{category.attributes.map((attr) => (
 				<Form.Item
@@ -42,6 +42,6 @@ export function AttributesSection({ category }: Props) {
 					)}
 				</Form.Item>
 			))}
-		</>
+		</Card>
 	);
 }

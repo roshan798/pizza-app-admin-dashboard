@@ -1,4 +1,4 @@
-import { Button, Form, Upload } from 'antd';
+import { Button, Card, Form, Upload } from 'antd';
 import type { FormInstance, UploadFile } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import type { ProductFormValues } from '../useProductFormData';
@@ -17,35 +17,46 @@ export function ImageUploadSection({
 	form,
 }: Props) {
 	return (
-		<Form.Item
-			label="Product Image"
-			name="image"
-			valuePropName="fileList"
-			getValueFromEvent={(e) => (e && e.fileList ? e.fileList : fileList)}
-			rules={
-				isEdit
-					? []
-					: [{ required: true, message: 'Please upload an image' }]
-			}
-		>
-			<Upload
-				listType="picture-card"
-				fileList={fileList}
-				beforeUpload={() => false}
-				maxCount={1}
-				onChange={({ fileList: fl }) => {
-					setFileList(fl);
-					form.setFieldsValue({ image: fl });
-				}}
-				onPreview={(file) => {
-					const url = (file.url || (file.thumbUrl as string)) ?? '';
-					if (url) window.open(url, '_blank', 'noopener,noreferrer');
-				}}
+		<Card title="Product Image" style={{ marginBottom: 24 }} type="inner">
+			<Form.Item
+				label="Product Image"
+				name="image"
+				valuePropName="fileList"
+				getValueFromEvent={(e) =>
+					e && e.fileList ? e.fileList : fileList
+				}
+				rules={
+					isEdit
+						? []
+						: [
+								{
+									required: true,
+									message: 'Please upload an image',
+								},
+							]
+				}
 			>
-				{fileList.length >= 1 ? null : (
-					<Button icon={<UploadOutlined />}>Upload</Button>
-				)}
-			</Upload>
-		</Form.Item>
+				<Upload
+					listType="picture-card"
+					fileList={fileList}
+					beforeUpload={() => false}
+					maxCount={1}
+					onChange={({ fileList: fl }) => {
+						setFileList(fl);
+						form.setFieldsValue({ image: fl });
+					}}
+					onPreview={(file) => {
+						const url =
+							(file.url || (file.thumbUrl as string)) ?? '';
+						if (url)
+							window.open(url, '_blank', 'noopener,noreferrer');
+					}}
+				>
+					{fileList.length >= 1 ? null : (
+						<Button icon={<UploadOutlined />}>Upload</Button>
+					)}
+				</Upload>
+			</Form.Item>
+		</Card>
 	);
 }

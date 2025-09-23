@@ -1,4 +1,4 @@
-import { Form, InputNumber, Select, Typography } from 'antd';
+import { Card, Form, InputNumber, Select, Typography } from 'antd';
 import type { Category } from '../../../../http/Catalog/types';
 
 const { Title } = Typography;
@@ -11,8 +11,12 @@ export function PriceConfigurationsSection({ category }: Props) {
 	if (!category) return null;
 
 	return (
-		<>
-			<Title level={5}>Price Configurations</Title>
+		<Card
+			title="Price Configurations"
+			style={{ marginBottom: 24 }}
+			type="inner"
+		>
+			<Title level={4}>Price Configurations</Title>
 			{Object.entries(category.priceConfiguration).map(([key, cfg]) => (
 				<Form.Item
 					key={key}
@@ -41,6 +45,6 @@ export function PriceConfigurationsSection({ category }: Props) {
 					)}
 				</Form.Item>
 			))}
-		</>
+		</Card>
 	);
 }
