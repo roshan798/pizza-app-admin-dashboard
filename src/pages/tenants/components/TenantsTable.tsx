@@ -9,6 +9,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { useNavigate } from 'react-router-dom';
 import type { Tenant } from '../types/types';
+import { toDateTime } from '../../../utils';
 
 interface TenantsTableProps {
 	tenants: Tenant[];
@@ -50,14 +51,9 @@ export default function TenantsTable({
 		{
 			title: 'Created At',
 			key: 'createdAt',
-			render: (_, record) =>
-				new Date(record.createdAt).toLocaleString('en-IN', {
-					day: '2-digit',
-					month: 'short',
-					year: 'numeric',
-					hour: '2-digit',
-					minute: '2-digit',
-				}),
+			render: (_, record) => {
+				return toDateTime(record.createdAt);
+			},
 			responsive: ['lg', 'xl'],
 		},
 		{
