@@ -5,26 +5,38 @@
 	--color-primary: oklch(67.699% 0.19092 32.835);
 }
 
-/* .custom-sidebar-menu .ant-menu-item {
-	transition: background 0.2s;
+/* Sidebar custom styles */
+.custom-sidebar-menu .ant-menu-item {
+	transition:
+		background 0.18s ease,
+		color 0.18s ease;
 }
 
-.custom-sidebar-menu .ant-menu-item:hover {
-	background: rgba(246, 95, 66, 0.12) !important;
-}
-
-.custom-sidebar-menu .ant-menu-item-selected {
-	background: rgba(246, 95, 66, 0.25) !important;
+/* Selected / active states */
+.custom-sidebar-menu .ant-menu-item-selected,
+.custom-sidebar-menu .ant-menu-item-active {
+	background: rgba(246, 95, 66, 0.22) !important;
 	color: #f65f42 !important;
 }
 
-.custom-sidebar-menu .ant-menu-item .ant-menu-item-icon {
+.custom-sidebar-menu .ant-menu-item:hover:not(.ant-menu-item-selected),
+.custom-sidebar-menu .ant-menu-item-active:not(.ant-menu-item-selected) {
+	background: rgba(246, 95, 66, 0.12) !important;
+}
+
+.custom-sidebar-menu .ant-menu-item .anticon {
 	font-size: 22px !important;
 }
 
 .custom-sidebar-menu .ant-menu-title-content {
 	font-size: 18px !important;
-} */
+}
+
+/* Make hover/active states configurable if needed by overriding --sidebar-hover */
+:root {
+	--sidebar-hover: rgba(246, 95, 66, 0.12);
+	--sidebar-active: rgba(246, 95, 66, 0.22);
+}
 
 /* @theme {
 	--color-primary: #f65f42;

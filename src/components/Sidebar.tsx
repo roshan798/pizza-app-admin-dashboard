@@ -4,18 +4,21 @@ import { Menu } from 'antd';
 import {
 	HomeOutlined,
 	TeamOutlined,
-	ApartmentOutlined,
-	AppstoreOutlined,
+	BankOutlined,
+	UnorderedListOutlined,
 	ShoppingOutlined,
+	TagOutlined,
 } from '@ant-design/icons';
 import { useThemeStore } from '../store/useThemeStore';
 
+// Use icon components (not elements) so we can create them with uniform props when rendering
 const sidebarLinks = [
-	{ to: '/', label: 'Dashboard', icon: <HomeOutlined /> },
-	{ to: '/users', label: 'Users', icon: <TeamOutlined /> },
-	{ to: '/tenants', label: 'Tenants', icon: <ApartmentOutlined /> },
-	{ to: '/categories', label: 'Categories', icon: <AppstoreOutlined /> },
-	{ to: '/products', label: 'Products', icon: <ShoppingOutlined /> },
+	{ to: '/', label: 'Dashboard', icon: HomeOutlined },
+	{ to: '/users', label: 'Users', icon: TeamOutlined },
+	{ to: '/tenants', label: 'Tenants', icon: BankOutlined },
+	{ to: '/categories', label: 'Categories', icon: UnorderedListOutlined },
+	{ to: '/products', label: 'Products', icon: ShoppingOutlined },
+	{ to: '/toppings', label: 'Toppings', icon: TagOutlined },
 ];
 
 const Sidebar: React.FC = () => {
@@ -25,6 +28,7 @@ const Sidebar: React.FC = () => {
 
 	return (
 		<Menu
+			className="custom-sidebar-menu"
 			mode="inline"
 			theme={theme}
 			selectedKeys={[location.pathname]}
@@ -36,10 +40,20 @@ const Sidebar: React.FC = () => {
 			}}
 			items={sidebarLinks.map((link) => ({
 				key: link.to,
-				icon: React.cloneElement(link.icon, {
+				// create icon element with consistent sizing
+				icon: React.createElement(link.icon, {
 					style: { fontSize: 22 },
 				}),
-				label: <span style={{ fontSize: 18 }}>{link.label}</span>,
+				// add accessible label and title for screen readers / tooltips
+				label: (
+					<span
+						aria-label={`Navigate to ${link.label}`}
+						title={link.label}
+						style={{ fontSize: 18 }}
+					>
+						{link.label}
+					</span>
+				),
 				onClick: () => navigate(link.to),
 			}))}
 		/>
