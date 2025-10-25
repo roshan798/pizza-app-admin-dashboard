@@ -1,13 +1,11 @@
 import { Table, Button, Space, Card, Typography, Dropdown, Menu } from 'antd';
 import { PlusOutlined, MoreOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-	fetchCategories as fetchCategoriesAPI,
-	deleteCategory,
-} from '../../http/Catalog/categories';
+import { useQuery } from '@tanstack/react-query';
+import { fetchCategories as fetchCategoriesAPI } from '../../http/Catalog/categories';
 import { Link } from 'react-router-dom';
 import type { Category } from '../../http/Catalog/types';
+import { toDateTime } from '../../utils';
 
 const { Title } = Typography;
 
@@ -17,7 +15,7 @@ const fetchCategories = async () => {
 };
 
 export default function CategoriesPage() {
-	const queryClient = useQueryClient();
+	// const queryClient = useQueryClient();
 	// const navigate = useNavigate();
 
 	const { data, isLoading, isError } = useQuery<Category[]>({
@@ -25,15 +23,18 @@ export default function CategoriesPage() {
 		queryFn: fetchCategories,
 	});
 
-	const deleteMutation = useMutation({
-		mutationFn: deleteCategory,
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['categories'] });
-		},
-	});
+	// const deleteMutation = useMutation({
+	// 	mutationFn: deleteCategory,
+	// 	onSuccess: () => {
+	// 		queryClient.invalidateQueries({ queryKey: ['categories'] });
+	// 	},
+	// });
 
 	const handleDelete = (id: string) => {
-		deleteMutation.mutate(id);
+		console.log(id);
+
+		// uncomment to DELETE
+		//deleteMutation.mutate(id);
 	};
 
 	const columns: ColumnsType<Category> = [
@@ -54,14 +55,7 @@ export default function CategoriesPage() {
 				new Date(a.createdAt || 0).getTime() -
 				new Date(b.createdAt || 0).getTime(),
 			defaultSortOrder: 'descend',
-			render: (val?: string) =>
-				val
-					? new Date(val).toLocaleDateString('en-GB', {
-							day: '2-digit',
-							month: 'short',
-							year: 'numeric',
-						})
-					: '-',
+			render: (val?: string) => toDateTime(val),
 		},
 		{
 			title: 'Actions',
