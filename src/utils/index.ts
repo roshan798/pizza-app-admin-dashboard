@@ -32,3 +32,14 @@ export const mapServerFormErrors = (
 	// Fallback
 	return { general: 'Something went wrong, please try again later.' };
 };
+
+export const toDateTime = (date?: string, showTime: boolean = true) => {
+	if (!date) return '-';
+	return new Date(date).toLocaleString('en-IN', {
+		day: '2-digit',
+		month: 'short',
+		year: 'numeric',
+		hour: showTime ? '2-digit' : undefined,
+		minute: showTime ? '2-digit' : undefined,
+	});
+};
