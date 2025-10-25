@@ -2,14 +2,11 @@ import { useState } from 'react';
 import { Button, Input, Select, Space, Card, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import ConfirmDeleteModal from './components/ConfirmDeleteModal';
-import TenantModal from '../tenants/components/TenantModal';
+import { useTenantModal } from '../../hooks/useTenantModal';
 import UserTable from './components/UsersTable';
-import { getTenantById } from '../../http/Auth/tenants';
 import { useUsers } from './hooks/useUsers';
 import type { User } from '../../store/userStore';
-import type { Tenant } from '../tenants/types/types';
 
 export default function Users() {
 	const navigate = useNavigate();
@@ -17,21 +14,9 @@ export default function Users() {
 
 	const [roleFilter, setRoleFilter] = useState<string>();
 	const [search, setSearch] = useState('');
-	const [tenantId, setTenantId] = useState<number | null>(null);
-	const [isTenantModalOpen, setIsTenantModalOpen] = useState(false);
+	const { openTenantModal, TenantModalElement } = useTenantModal();
 	const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 	const [userToDelete, setUserToDelete] = useState<User | null>(null);
-
-	const { data: tenant, isFetching: isTenantLoading } = useQuery({
-		queryKey: ['tenant', tenantId],
-		queryFn: () =>
-			tenantId
-				? getTenantById(String(tenantId)).then(
-						(res) => res.data.tenant as Tenant
-					)
-				: null,
-		enabled: !!tenantId && isTenantModalOpen,
-	});
 
 	const filteredUsers =
 		users
@@ -97,24 +82,11 @@ export default function Users() {
 					setUserToDelete(user);
 					setIsConfirmOpen(true);
 				}}
-				onTenantClick={(id) => {
-					setTenantId(id);
-					setIsTenantModalOpen(true);
-				}}
+				onTenantClick={(id) => openTenantModal(id)}
 			/>
 
-			{/* Tenant Modal */}
-			<TenantModal
-				open={isTenantModalOpen}
-				onClose={() => {
-					setIsTenantModalOpen(false);
-					setTenantId(null);
-				}}
-				tenant={tenant}
-				isLoading={isTenantLoading}
-			/>
+			{TenantModalElement}
 
-			{/* Confirm Delete Modal */}
 			<ConfirmDeleteModal
 				open={isConfirmOpen}
 				onConfirm={() =>
