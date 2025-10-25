@@ -18,6 +18,7 @@ export function useTenants() {
 	const { data, isLoading, error } = useQuery({
 		queryKey: ['tenants'],
 		queryFn: fetchTenants,
+		staleTime: 1000 * 60 * 5, // caches 5 minutes
 	});
 
 	const create = useMutation({
