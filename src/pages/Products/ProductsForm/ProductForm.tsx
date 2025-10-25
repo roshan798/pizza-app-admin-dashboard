@@ -18,6 +18,7 @@ import { AttributesSection } from './sections/Attributes';
 import type { ProductFormValues } from './useProductFormData';
 import { useNotification } from '../../../hooks/useNotification';
 import { TenantSection } from './sections/TenantSection';
+import { useUserStore } from '../../../store/userStore';
 
 const { Title } = Typography;
 
@@ -49,6 +50,8 @@ interface Props {
 	selectedCategory?: Category;
 	selectedCategoryId?: string;
 	setSelectedCategoryId: (val: string) => void;
+	selectedTenantId?: string;
+	setSelectedTenantId: (val: string) => void;
 	loadingDetail: boolean;
 	loadingList: boolean;
 	loadingProduct: boolean;
@@ -64,6 +67,8 @@ export function ProductForm({
 	selectedCategory,
 	selectedCategoryId,
 	setSelectedCategoryId,
+	setSelectedTenantId,
+	selectedTenantId,
 	loadingDetail,
 	loadingList,
 	loadingProduct,
@@ -72,7 +77,7 @@ export function ProductForm({
 	const queryClient = useQueryClient();
 	const notify = useNotification();
 	const navigate = useNavigate();
-
+	const { user } = useUserStore();
 	const mutation = useMutation({
 		mutationFn: async (formData: FormData) => {
 			return isEdit
@@ -147,8 +152,8 @@ export function ProductForm({
 		const payload: Omit<Product, '_id' | 'createdAt' | 'updatedAt'> = {
 			name: values.name,
 			description: values.description,
-			tenantId: '1',
 			categoryId: selectedCategoryId,
+			tenantId: selectedTenantId!,
 			priceConfiguration,
 			attributes,
 			isPublished: values.isPublished,
@@ -213,8 +218,13 @@ export function ProductForm({
 					loadingList={loadingList}
 					disabledCategory={isEdit}
 				/>
-				{/* Tenant Section */}
-				<TenantSection />
+				{/* Tenant Section for admin only */}
+				{user && user.role == 'admin' ? (
+					<TenantSection
+						setSelectedTenantId={setSelectedTenantId}
+						selectedTenantId={selectedTenantId}
+					/>
+				) : null}
 
 				<ImageUploadSection
 					isEdit={isEdit}

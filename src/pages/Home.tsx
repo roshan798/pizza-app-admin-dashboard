@@ -8,7 +8,6 @@ import {
 	Typography,
 	Tag,
 	Spin,
-	message,
 	Space,
 } from 'antd';
 import {
@@ -106,7 +105,6 @@ const Home = () => {
 					'[Home] Failed to fetch users, using dummy:',
 					err
 				);
-				message.warning('Showing fallback user data');
 				setUsers(fallbackData);
 			} finally {
 				setLoading(false);

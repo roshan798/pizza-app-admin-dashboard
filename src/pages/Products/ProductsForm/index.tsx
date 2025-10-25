@@ -20,6 +20,8 @@ export default function ProductsFormPage() {
 			loadingList={data.loadingList}
 			loadingProduct={data.loadingProduct}
 			productId={data.isEdit ? data.id : undefined}
+			selectedTenantId={data.selectedTenantId}
+			setSelectedTenantId={data.setSelectedTenantId}
 		/>
 	);
 }

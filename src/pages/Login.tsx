@@ -47,13 +47,9 @@ const Login = () => {
 	};
 
 	return (
-		<Row
-			justify="center"
-			align="middle"
-			style={{ minHeight: '100vh', background: '#f5f5f5' }}
-		>
+		<Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
 			<Col xs={22} sm={16} md={12} lg={8}>
-				<Card bordered style={{ borderRadius: 8, padding: '32px' }}>
+				<Card variant="outlined" style={{ borderRadius: 8 }}>
 					<Space
 						direction="vertical"
 						size="large"

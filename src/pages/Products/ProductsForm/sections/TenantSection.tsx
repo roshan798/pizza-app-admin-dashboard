@@ -1,51 +1,42 @@
-import { Card, Form, Input } from 'antd';
-import { useUserStore } from '../../../../store/userStore';
-// import type { Tenant } from "../../../users/CreateOrUpdateUser";
-// type TenantPropsType = {
-//     tenantId?: string;
-//     tenants: Tenant[];
-//     setTenantId: (id: string) => void;
-//     loadingTenants: boolean;
-//     disabledTenant: boolean;
-// }
+import { Card, Form, Select } from 'antd';
+// import { useUserStore } from '../../../../store/userStore';
+import { useTenants } from '../../../tenants/hooks/useTenants';
+type TenantPropsType = {
+	selectedTenantId: string | undefined;
+	setSelectedTenantId: (id: string) => void;
+};
 
-export function TenantSection() {
-	const { user } = useUserStore();
-	console.log('User in TenantSection:', user);
+export function TenantSection({
+	selectedTenantId,
+	setSelectedTenantId,
+}: TenantPropsType) {
+	// const { user } = useUserStore();
+	const { tenants, isLoading } = useTenants();
+	// console.log('Tenants in TenantSection:', selectedTenantId, tenants);
+	// const options = (tenants ?? []).map(t => ({ label: t.name, value: String(t.id) }));
+	// console.log('Select value:', selectedTenantId, 'options:', options);
+
 	return (
 		<Card
 			title="Tenant Information"
 			style={{ marginBottom: 24 }}
 			type="inner"
 		>
-			{/* <Form.Item
-                label="Category"
-                name="categoryId"
-                rules={[{ required: true, message: 'Select a category' }]}
-            >
-                <Select
-                    placeholder="Select a category"
-                    onChange={(val: string) => setSelectedCategoryId(val)}
-                    loading={loadingList}
-                    value={selectedCategoryId}
-                    disabled={disabledCategory}
-                >
-                    {(categoryList ?? []).map((cat) => (
-                        <Select.Option key={cat.id ?? cat.name} value={cat.id!}>
-                            {cat.name}
-                        </Select.Option>
-                    ))}
-                </Select>
-            </Form.Item> */}
-
 			<Form.Item
 				label="Tenant"
-				name="TenantId"
-				// rules={[{ required: true, message: 'Enter description' }]}
+				name="tenantId"
+				rules={[{ required: true, message: 'Select a tenant' }]}
 			>
-				<Input
-					// rows={3}
-					value={user?.tenantId ? user.tenantId : 'No Tenant'}
+				<Select
+					placeholder="Select a tenant"
+					loading={isLoading}
+					value={selectedTenantId ?? undefined}
+					onChange={(val: string) => setSelectedTenantId(val)}
+					options={(tenants ?? []).map((t) => ({
+						label: t.name,
+						value: String(t.id),
+					}))}
+					optionFilterProp="label"
 				/>
 			</Form.Item>
 		</Card>

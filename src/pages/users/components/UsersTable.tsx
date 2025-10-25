@@ -35,7 +35,7 @@ export default function UserTable({
 					</span>
 				</Space>
 			),
-			responsive: ['xs', 'sm', 'md', 'lg', 'xl'], // always visible
+			responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
 		},
 		{
 			title: 'Role',

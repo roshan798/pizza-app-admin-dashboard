@@ -33,6 +33,8 @@ const App = () => {
 					colorBgLayout: resolved === 'dark' ? '#1f1f1f' : '#fff',
 					colorText: resolved === 'dark' ? '#fff' : '#000',
 					colorBgContainer: resolved === 'dark' ? '#141414' : '#fff',
+					fontFamily:
+						"Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
 				},
 			}}
 		>

@@ -2,7 +2,7 @@
 @import 'antd/dist/reset.css';
 
 :root {
-	--color-primary: #f65f42;
+	--color-primary: oklch(67.699% 0.19092 32.835);
 }
 
 /* .custom-sidebar-menu .ant-menu-item {

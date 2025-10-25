@@ -27,6 +27,7 @@ export interface ProductFormValues {
 	// attributes shape: Record<attributeName, value>
 	attributes?: Record<string, string | number | boolean>;
 	isPublished: boolean;
+	tenantId: string;
 }
 
 export const useProductFormData = (
@@ -37,6 +38,9 @@ export const useProductFormData = (
 	const isEdit = Boolean(id);
 
 	const [selectedCategoryId, setSelectedCategoryId] = useState<
+		string | undefined
+	>(undefined);
+	const [selectedTenantId, setSelectedTenantId] = useState<
 		string | undefined
 	>(undefined);
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -81,12 +85,16 @@ export const useProductFormData = (
 				description: existingProduct.description,
 				categoryId: existingProduct.categoryId,
 				isPublished: existingProduct.isPublished || true,
+				tenantId: existingProduct.tenantId,
 			});
 			setSelectedCategoryId(existingProduct.categoryId);
+			setSelectedTenantId(existingProduct.tenantId);
 		} else if (!isEdit) {
 			form.resetFields();
 			form.setFieldsValue({ isPublished: true });
 			setSelectedCategoryId(undefined);
+			setSelectedTenantId(undefined);
+			setFileList([]);
 		}
 	}, [existingProduct, isEdit, form]);
 
@@ -166,5 +174,7 @@ export const useProductFormData = (
 		categoryList,
 		selectedCategory,
 		id,
+		selectedTenantId,
+		setSelectedTenantId,
 	};
 };
