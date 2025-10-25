@@ -60,3 +60,14 @@ export interface Product {
 	createdAt: Date;
 	updatedAt: Date;
 }
+
+// Topping
+export interface Topping {
+	id: string;
+	name: string;
+	price: number;
+	image?: string;
+	tenantId?: string;
+	createdAt?: string | Date;
+	updatedAt?: string | Date;
+}
