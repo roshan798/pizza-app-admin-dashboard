@@ -19,3 +19,7 @@ export const updateProduct = async (id: string, payload: unknown) => {
 		headers: { 'Content-Type': 'multipart/form-data' },
 	});
 };
+
+export const deleteProduct = async (id: string) => {
+	return await api.delete(CONFIG.products.url + '/' + id);
+};
