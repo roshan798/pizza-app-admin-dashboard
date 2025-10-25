@@ -20,5 +20,8 @@ const CONFIG = {
 	products: {
 		url: '/catalog/products',
 	},
+	toppings: {
+		url: '/catalog/toppings',
+	},
 };
 export default CONFIG;
