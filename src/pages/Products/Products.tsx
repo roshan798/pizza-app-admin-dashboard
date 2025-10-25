@@ -1,6 +1,5 @@
 // pages/products/ProductList.tsx
 import { useCallback, useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import {
 	Table,
 	Tag,
@@ -24,28 +23,24 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { Product } from '../../http/Catalog/types';
-import { fetchProducts as fetchProductsAPI } from '../../http/Catalog/products';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Assuming you have the same Tenant modal component used by Users
-import TenantModal from '../tenants/components/TenantModal';
 
 // Optional hook to resolve tenant names
 import { useTenants } from '../tenants/hooks/useTenants';
 
 // Assuming user store with role
 import { useUserStore } from '../../store/userStore';
-import { getTenantById } from '../../http/Auth/tenants';
-import type { Tenant } from '../tenants/types/types';
+import { useTenantModal } from '../../hooks/useTenantModal';
 
 const { Search } = Input;
 const { useBreakpoint } = Grid;
 const { Title } = Typography;
 
-const fetchProducts = async () => {
-	const res = await fetchProductsAPI();
-	return res.data.data as Product[];
-};
+import { useProducts } from './hooks/useProducts';
+import { Modal } from 'antd';
+import { toDateTime } from '../../utils';
 
 export default function Products() {
 	const navigate = useNavigate();
@@ -53,10 +48,8 @@ export default function Products() {
 	const { user } = useUserStore();
 	const isAdmin = user?.role?.toLowerCase?.() === 'admin';
 
-	const { data: products = [], isLoading } = useQuery({
-		queryKey: ['products'],
-		queryFn: fetchProducts,
-	});
+	// useProducts provides fetch + deleteMutation
+	const { products, isLoading, deleteMutation } = useProducts();
 
 	// Optional tenant name mapping
 	const { tenants } = useTenants();
@@ -66,47 +59,37 @@ export default function Products() {
 		return m;
 	}, [tenants]);
 
-	// Tenant modal state
-	const [tenantModalOpen, setTenantModalOpen] = useState(false);
-	const [tenantId, setTenantId] = useState<string | null>(null);
-	const { data: tenant, isLoading: isTenantLoading } = useQuery({
-		queryKey: ['tenant', tenantId],
-		queryFn: () =>
-			tenantId
-				? getTenantById(String(tenantId)).then(
-						(res) => res.data.tenant as Tenant
-					)
-				: null,
-		enabled: !!tenantId && tenantModalOpen,
-	});
+	// Tenant modal (shared hook)
+	const { openTenantModal, TenantModalElement } = useTenantModal();
 
-	const openTenantModal = (record: Product) => {
-		setTenantId(String(record.tenantId ?? ''));
-		// setTenantProduct(record);
-		setTenantModalOpen(true);
-	};
-	const closeTenantModal = () => {
-		setTenantModalOpen(false);
-		// setTenantProduct(null);
-		setTenantId(null);
-	};
+	const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+	const [productToDelete, setProductToDelete] = useState<Product | null>(
+		null
+	);
 
 	const handleMenuClick = useCallback(
 		(action: string, id: string) => {
 			switch (action) {
-				case 'view':
+				case 'view': {
 					navigate(`/products/${id}`);
 					break;
-				case 'edit':
+				}
+				case 'edit': {
 					navigate(`/products/edit/${id}`);
 					break;
-				case 'delete':
-					// TODO: add delete mutation
-					console.log('Delete product', id);
+				}
+				case 'delete': {
+					// open confirm modal
+					const p = products.find(
+						(x: Product) => String(x._id) === String(id)
+					);
+					setProductToDelete(p ?? null);
+					setIsConfirmOpen(true);
 					break;
+				}
 			}
 		},
-		[navigate]
+		[navigate, products]
 	);
 
 	const columns: ColumnsType<Product> = useMemo(() => {
@@ -172,12 +155,9 @@ export default function Products() {
 				title: 'Created',
 				dataIndex: 'createdAt',
 				key: 'createdAt',
-				render: (date: string) =>
-					new Date(date).toLocaleDateString('en-GB', {
-						day: '2-digit',
-						month: screens.xs ? 'numeric' : 'long',
-						year: 'numeric',
-					}),
+				render: (date: string) => {
+					return toDateTime(date);
+				},
 				sorter: (a, b) =>
 					new Date(a.createdAt).getTime() -
 					new Date(b.createdAt).getTime(),
@@ -199,7 +179,9 @@ export default function Products() {
 					return (
 						<Button
 							type="link"
-							onClick={() => openTenantModal(record)}
+							onClick={() =>
+								openTenantModal(record.tenantId ?? '')
+							}
 						>
 							{label}
 						</Button>
@@ -251,7 +233,14 @@ export default function Products() {
 		});
 
 		return cols;
-	}, [handleMenuClick, isAdmin, navigate, screens.xs, tenantMap]);
+	}, [
+		handleMenuClick,
+		isAdmin,
+		navigate,
+		screens.xs,
+		tenantMap,
+		openTenantModal,
+	]);
 
 	return (
 		<Card>
@@ -304,12 +293,30 @@ export default function Products() {
 				scroll={{ x: 'max-content' }}
 			/>
 
-			<TenantModal
-				open={tenantModalOpen}
-				onClose={closeTenantModal}
-				tenant={tenant}
-				isLoading={isTenantLoading}
-			/>
+			{TenantModalElement}
+
+			<Modal
+				title="Confirm Delete"
+				open={isConfirmOpen}
+				onOk={() => {
+					if (productToDelete) {
+						deleteMutation.mutate(String(productToDelete._id));
+					}
+					setIsConfirmOpen(false);
+					setProductToDelete(null);
+				}}
+				confirmLoading={deleteMutation.isPending}
+				onCancel={() => {
+					setIsConfirmOpen(false);
+					setProductToDelete(null);
+				}}
+				okButtonProps={{ danger: true }}
+			>
+				<p>
+					Are you sure you want to delete{' '}
+					<b>{productToDelete?.name}</b>?
+				</p>
+			</Modal>
 		</Card>
 	);
 }
