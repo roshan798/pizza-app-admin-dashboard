@@ -25,7 +25,6 @@ import { useThemeStore } from '../store/useThemeStore';
 import type { MenuProps } from 'antd';
 import { getTenantById } from '../http/Auth/tenants';
 import type { Tenant } from '../pages/tenants/types/types';
-import { useEffect } from 'react';
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -52,10 +51,6 @@ const AppHeader = () => {
 				return tenantData;
 			}),
 	});
-	console.log('Tenant data in header:', tenant);
-	useEffect(() => {
-		console.log('Tenant data updated in header:', tenant);
-	}, [tenant]);
 
 	const handleLogout = async () => {
 		try {
