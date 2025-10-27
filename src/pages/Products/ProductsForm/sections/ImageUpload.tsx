@@ -1,62 +1,20 @@
-import { Button, Card, Form, Upload } from 'antd';
-import type { FormInstance, UploadFile } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import type { ProductFormValues } from '../useProductFormData';
+import type { UploadFile } from 'antd';
+import ImageUploadCard from '../../../../components/ImageUploadCard';
 
 interface Props {
 	isEdit: boolean;
 	fileList: UploadFile[];
 	setFileList: (fl: UploadFile[]) => void;
-	form: FormInstance<ProductFormValues>;
 }
 
-export function ImageUploadSection({
-	isEdit,
-	fileList,
-	setFileList,
-	form,
-}: Props) {
+export function ImageUploadSection({ isEdit, fileList, setFileList }: Props) {
 	return (
-		<Card title="Product Image" style={{ marginBottom: 24 }} type="inner">
-			<Form.Item
-				label="Product Image"
-				name="image"
-				valuePropName="fileList"
-				getValueFromEvent={(e) =>
-					e && e.fileList ? e.fileList : fileList
-				}
-				rules={
-					isEdit
-						? []
-						: [
-								{
-									required: true,
-									message: 'Please upload an image',
-								},
-							]
-				}
-			>
-				<Upload
-					listType="picture-card"
-					fileList={fileList}
-					beforeUpload={() => false}
-					maxCount={1}
-					onChange={({ fileList: fl }) => {
-						setFileList(fl);
-						form.setFieldsValue({ image: fl });
-					}}
-					onPreview={(file) => {
-						const url =
-							(file.url || (file.thumbUrl as string)) ?? '';
-						if (url)
-							window.open(url, '_blank', 'noopener,noreferrer');
-					}}
-				>
-					{fileList.length >= 1 ? null : (
-						<Button icon={<UploadOutlined />}>Upload</Button>
-					)}
-				</Upload>
-			</Form.Item>
-		</Card>
+		<ImageUploadCard
+			fileList={fileList}
+			setFileList={setFileList}
+			name="image"
+			label="Product Image"
+			isEdit={isEdit}
+		/>
 	);
 }

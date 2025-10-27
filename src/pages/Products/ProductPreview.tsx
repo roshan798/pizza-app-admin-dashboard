@@ -19,6 +19,7 @@ import {
 	Badge,
 } from 'antd';
 import { useMemo, useState } from 'react';
+import PreviewHeader from '../../components/PreviewHeader';
 import type { Product } from '../../http/Catalog/types';
 import { fetchProductById } from '../../http/Catalog/products';
 
@@ -55,6 +56,7 @@ export default function ProductDetailStacked() {
 	>();
 	const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
 	const [quantity, setQuantity] = useState<number>(1);
+	// navigation handled by PreviewHeader
 
 	// 2) All derived memos unconditionally
 	const priceConfiguration: PriceConfig = useMemo(
@@ -159,7 +161,7 @@ export default function ProductDetailStacked() {
 
 	// 3) Early returns
 	if (isLoading) return <Spin tip="Loading product..." />;
-	if (!product) return <Text>Product not found ❌</Text>;
+	if (!product) return <Text>Product not found</Text>;
 
 	// Shared styles to prevent vertical letter wrapping
 	const longTextStyle: React.CSSProperties = {
@@ -182,6 +184,11 @@ export default function ProductDetailStacked() {
 	return (
 		<Layout style={{ background: 'transparent' }}>
 			<Content style={{ padding: 16 }}>
+				<PreviewHeader
+					title={product.name}
+					editPath="/products/edit"
+					id={id}
+				/>
 				<Row gutter={[24, 24]}>
 					{/* Gallery */}
 					<Col xs={24} md={13}>

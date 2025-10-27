@@ -1,7 +1,7 @@
-import React from 'react';
-import { Card, Form, Input, Button, Upload, Spin } from 'antd';
+import { useEffect, useState } from 'react';
+import { Card, Form, Input, Button, Spin } from 'antd';
 import type { UploadFile } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import ImageUploadCard from '../../../components/ImageUploadCard';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -21,6 +21,7 @@ interface FormValues {
 
 export default function ToppingFormPage() {
 	const [form] = Form.useForm<FormValues>();
+	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const { id } = useParams();
@@ -45,13 +46,26 @@ export default function ToppingFormPage() {
 		},
 	});
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (detail) {
 			form.setFieldsValue({
 				name: detail.name,
 				price: detail.price,
 				tenantId: detail.tenantId,
 			});
+
+			if (detail.image) {
+				const seeded: UploadFile[] = [
+					{
+						uid: '-1',
+						name: 'current-image',
+						status: 'done',
+						url: detail.image,
+					},
+				];
+				setFileList(seeded);
+				form.setFieldsValue({ image: seeded });
+			}
 		}
 	}, [detail, form]);
 
@@ -111,22 +125,13 @@ export default function ToppingFormPage() {
 					/>
 				)}
 
-				<Form.Item
-					label="Image"
+				<ImageUploadCard
+					fileList={fileList}
+					setFileList={setFileList}
 					name="image"
-					valuePropName="fileList"
-					getValueFromEvent={(e) =>
-						e && e.fileList ? e.fileList : []
-					}
-				>
-					<Upload
-						listType="picture"
-						beforeUpload={() => false}
-						maxCount={1}
-					>
-						<Button icon={<UploadOutlined />}>Upload</Button>
-					</Upload>
-				</Form.Item>
+					label="Topping Image"
+					isEdit={isEdit}
+				/>
 
 				<Form.Item>
 					<Button
