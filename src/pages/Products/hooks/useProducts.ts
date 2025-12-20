@@ -4,18 +4,20 @@ import { useNotification } from '../../../hooks/useNotification';
 import {
 	fetchProducts as fetchProductsAPI,
 	deleteProduct,
+	type GetAllFilters,
+	type GetAllServiceResult,
 } from '../../../http/Catalog/products';
 import type { Product } from '../../../http/Catalog/types';
 
-export function useProducts() {
+export function useProducts(params?: GetAllFilters) {
 	const queryClient = useQueryClient();
 	const notify = useNotification();
 
 	const { data: products = [], isLoading } = useQuery({
 		queryKey: ['products'],
 		queryFn: async (): Promise<Product[]> => {
-			const res = await fetchProductsAPI();
-			return res.data.data as Product[];
+			const res = await fetchProductsAPI(params);
+			return (res.data.data as GetAllServiceResult<Product>)['items'];
 		},
 	});
 

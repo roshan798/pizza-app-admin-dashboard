@@ -1,4 +1,3 @@
-// pages/products/ProductList.tsx
 import { useCallback, useMemo, useState } from 'react';
 import {
 	Table,
@@ -25,12 +24,8 @@ import type { ColumnsType } from 'antd/es/table';
 import type { Product } from '../../http/Catalog/types';
 import { Link, useNavigate } from 'react-router-dom';
 
-// Assuming you have the same Tenant modal component used by Users
-
-// Optional hook to resolve tenant names
 import { useTenants } from '../tenants/hooks/useTenants';
 
-// Assuming user store with role
 import { useUserStore } from '../../store/userStore';
 import { useTenantModal } from '../../hooks/useTenantModal';
 
@@ -48,10 +43,8 @@ export default function Products() {
 	const { user } = useUserStore();
 	const isAdmin = user?.role?.toLowerCase?.() === 'admin';
 
-	// useProducts provides fetch + deleteMutation
 	const { products, isLoading, deleteMutation } = useProducts();
 
-	// Optional tenant name mapping
 	const { tenants } = useTenants();
 	const tenantMap = useMemo(() => {
 		const m = new Map<string, string>();
