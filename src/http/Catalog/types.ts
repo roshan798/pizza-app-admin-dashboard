@@ -16,6 +16,7 @@ export interface Category {
 	id?: string;
 	_id?: string;
 	name: string;
+	isToppingsAvailable: boolean;
 	priceConfiguration: CategoryPriceConfiguration;
 	attributes: CategoryAttribute[];
 	createdAt?: Date;

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, Card, Form, Input, Typography, Divider } from 'antd';
+import { Button, Card, Form, Input, Typography, Divider, Radio } from 'antd';
 import { PriceConfigs } from './sections/PriceConfigs';
 import { Attributes } from './sections/Attributes';
 import type { Category } from '../../../../http/Catalog/types';
@@ -25,6 +25,7 @@ interface AttributeFormItem {
 
 interface CategoryFormValues {
 	name: string;
+	isToppingsAvailable: boolean;
 	priceConfiguration: PriceConfigFormItem[];
 	attributes: AttributeFormItem[];
 }
@@ -59,6 +60,7 @@ export function CreateOrUpdateCategoryForm({
 
 	const transformToFormValues = (category: Category): CategoryFormValues => ({
 		name: category.name,
+		isToppingsAvailable: category.isToppingsAvailable,
 		priceConfiguration: Object.entries(category.priceConfiguration).map(
 			([key, cfg]) => ({
 				key,
@@ -95,6 +97,7 @@ export function CreateOrUpdateCategoryForm({
 		const payload: Category = {
 			...(initialCategory ?? {}),
 			name: values.name,
+			isToppingsAvailable: values.isToppingsAvailable,
 			priceConfiguration: priceConfig,
 			attributes,
 		};
@@ -130,6 +133,15 @@ export function CreateOrUpdateCategoryForm({
 					]}
 				>
 					<Input placeholder="e.g. Pizza" />
+				</Form.Item>
+				<Form.Item
+					label="Toppings Available"
+					name="isToppingsAvailable"
+				>
+					<Radio.Group>
+						<Radio value={true}>Yes</Radio>
+						<Radio value={false}>No</Radio>
+					</Radio.Group>
 				</Form.Item>
 
 				{/* Price Configurations */}

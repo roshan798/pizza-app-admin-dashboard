@@ -64,10 +64,6 @@ export default function CategoryDetails() {
 				id={id}
 			/>
 			<Card
-				style={{
-					paddingTop: 12,
-					paddingBottom: 16,
-				}}
 			>
 				{/* Meta summary */}
 				<Descriptions
@@ -84,6 +80,11 @@ export default function CategoryDetails() {
 							key: 'updated',
 							label: 'Updated',
 							children: updatedAt,
+						},
+						{
+							key: 'toppingsAvailable',
+							label: 'Toppings Available',
+							children: category.isToppingsAvailable ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>,
 						},
 						// Add status if available:
 						// { key: "status", label: "Status", children: <Tag color="green">Published</Tag> },
@@ -123,29 +124,24 @@ export default function CategoryDetails() {
 											</div>
 											<div>
 												<Text strong>
-													Available Options:{' '}
+													Available Options:
 												</Text>
-												<div style={{ marginTop: 8 }}>
+												<Space wrap size={[0, 8]} style={{ marginTop: 8 }}>
 													{cfg.availableOptions
 														?.length ? (
 														cfg.availableOptions.map(
 															(opt) => (
 																<Tag
 																	key={opt}
-																	style={{
-																		marginBottom: 8,
-																	}}
 																>
 																	{opt}
 																</Tag>
 															)
 														)
 													) : (
-														<Text type="secondary">
-															None
-														</Text>
+														<Tag color="default">None</Tag>
 													)}
-												</div>
+												</Space>
 											</div>
 										</Space>
 									</Card>
@@ -198,29 +194,24 @@ export default function CategoryDetails() {
 										</div>
 										<div>
 											<Text strong>
-												Available Options:{' '}
+												Available Options:
 											</Text>
-											<div style={{ marginTop: 8 }}>
+											<Space wrap size={[0, 8]} style={{ marginTop: 8 }}>
 												{attr.availableOptions
 													?.length ? (
 													attr.availableOptions.map(
 														(opt) => (
 															<Tag
 																key={opt}
-																style={{
-																	marginBottom: 8,
-																}}
 															>
 																{opt}
 															</Tag>
 														)
 													)
 												) : (
-													<Text type="secondary">
-														None
-													</Text>
+													<Tag color="default">None</Tag>
 												)}
-											</div>
+											</Space>
 										</div>
 									</Space>
 								</Card>
