@@ -63,8 +63,7 @@ export default function CategoryDetails() {
 				editPath="/categories/edit"
 				id={id}
 			/>
-			<Card
-			>
+			<Card>
 				{/* Meta summary */}
 				<Descriptions
 					size="small"
@@ -84,7 +83,11 @@ export default function CategoryDetails() {
 						{
 							key: 'toppingsAvailable',
 							label: 'Toppings Available',
-							children: category.isToppingsAvailable ? <Tag color="green">Yes</Tag> : <Tag color="red">No</Tag>,
+							children: category.isToppingsAvailable ? (
+								<Tag color="green">Yes</Tag>
+							) : (
+								<Tag color="red">No</Tag>
+							),
 						},
 						// Add status if available:
 						// { key: "status", label: "Status", children: <Tag color="green">Published</Tag> },
@@ -126,20 +129,24 @@ export default function CategoryDetails() {
 												<Text strong>
 													Available Options:
 												</Text>
-												<Space wrap size={[0, 8]} style={{ marginTop: 8 }}>
+												<Space
+													wrap
+													size={[0, 8]}
+													style={{ marginTop: 8 }}
+												>
 													{cfg.availableOptions
 														?.length ? (
 														cfg.availableOptions.map(
 															(opt) => (
-																<Tag
-																	key={opt}
-																>
+																<Tag key={opt}>
 																	{opt}
 																</Tag>
 															)
 														)
 													) : (
-														<Tag color="default">None</Tag>
+														<Tag color="default">
+															None
+														</Tag>
 													)}
 												</Space>
 											</div>
@@ -196,20 +203,24 @@ export default function CategoryDetails() {
 											<Text strong>
 												Available Options:
 											</Text>
-											<Space wrap size={[0, 8]} style={{ marginTop: 8 }}>
+											<Space
+												wrap
+												size={[0, 8]}
+												style={{ marginTop: 8 }}
+											>
 												{attr.availableOptions
 													?.length ? (
 													attr.availableOptions.map(
 														(opt) => (
-															<Tag
-																key={opt}
-															>
+															<Tag key={opt}>
 																{opt}
 															</Tag>
 														)
 													)
 												) : (
-													<Tag color="default">None</Tag>
+													<Tag color="default">
+														None
+													</Tag>
 												)}
 											</Space>
 										</div>
