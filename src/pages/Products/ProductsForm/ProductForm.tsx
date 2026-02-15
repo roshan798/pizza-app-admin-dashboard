@@ -230,7 +230,6 @@ export function ProductForm({
 					isEdit={isEdit}
 					fileList={fileList}
 					setFileList={setFileList}
-					form={form}
 				/>
 
 				{selectedCategoryId && (

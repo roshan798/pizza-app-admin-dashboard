@@ -23,5 +23,8 @@ const CONFIG = {
 	toppings: {
 		url: '/catalog/toppings',
 	},
+	orders: {
+		url: '/order/orders',
+	},
 };
 export default CONFIG;

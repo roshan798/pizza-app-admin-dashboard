@@ -43,6 +43,9 @@ const Toppings = lazy(() => import('../pages/toppings/Toppings'));
 const ToppingForm = lazy(() => import('../pages/toppings/ToppingForm'));
 const ToppingPreview = lazy(() => import('../pages/toppings/ToppingPreview'));
 
+const OrderPage = lazy(() => import('../pages/orders/Orders'));
+const OrderDetailPage = lazy(() => import('../pages/orders/OrderDetailPage'));
+
 export const router = createBrowserRouter([
 	{
 		path: '/',
@@ -104,10 +107,21 @@ export const router = createBrowserRouter([
 								path: 'toppings/edit/:id',
 								Component: ToppingForm,
 							},
-							{ path: 'categories', Component: CategoriesPage },
+							{
+								path: 'categories',
+								Component: CategoriesPage,
+							},
 							{
 								path: 'categories/:id',
 								Component: CategoryDetails,
+							},
+							{
+								path: 'orders',
+								Component: OrderPage,
+							},
+							{
+								path: 'orders/:id',
+								Component: OrderDetailPage,
 							},
 						],
 					},

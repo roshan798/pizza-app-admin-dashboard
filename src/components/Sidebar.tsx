@@ -8,18 +8,19 @@ import {
 	UnorderedListOutlined,
 	ShoppingOutlined,
 	TagOutlined,
+	FileTextOutlined
 } from '@ant-design/icons';
 import { useThemeStore } from '../store/useThemeStore';
 
-// Use icon components (not elements) so we can create them with uniform props when rendering
 const sidebarLinks = [
 	{ to: '/', label: 'Dashboard', icon: HomeOutlined },
 	{ to: '/users', label: 'Users', icon: TeamOutlined },
 	{ to: '/tenants', label: 'Tenants', icon: BankOutlined },
 	{ to: '/categories', label: 'Categories', icon: UnorderedListOutlined },
 	{ to: '/products', label: 'Products', icon: ShoppingOutlined },
-	{ to: '/toppings', label: 'Toppings', icon: TagOutlined },
-];
+	{ to: '/toppings', label: 'Toppings', icon: TagOutlined }, 
+	{ to: '/orders', label: 'Orders', icon: FileTextOutlined },
+]
 
 const Sidebar: React.FC = () => {
 	const location = useLocation();
