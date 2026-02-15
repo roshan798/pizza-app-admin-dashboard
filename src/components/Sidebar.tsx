@@ -8,7 +8,7 @@ import {
 	UnorderedListOutlined,
 	ShoppingOutlined,
 	TagOutlined,
-	FileTextOutlined
+	FileTextOutlined,
 } from '@ant-design/icons';
 import { useThemeStore } from '../store/useThemeStore';
 
@@ -18,9 +18,9 @@ const sidebarLinks = [
 	{ to: '/tenants', label: 'Tenants', icon: BankOutlined },
 	{ to: '/categories', label: 'Categories', icon: UnorderedListOutlined },
 	{ to: '/products', label: 'Products', icon: ShoppingOutlined },
-	{ to: '/toppings', label: 'Toppings', icon: TagOutlined }, 
+	{ to: '/toppings', label: 'Toppings', icon: TagOutlined },
 	{ to: '/orders', label: 'Orders', icon: FileTextOutlined },
-]
+];
 
 const Sidebar: React.FC = () => {
 	const location = useLocation();
