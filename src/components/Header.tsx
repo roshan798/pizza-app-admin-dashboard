@@ -152,7 +152,7 @@ const AppHeader = () => {
 				style={{
 					display: 'flex',
 					alignItems: 'center',
-					gap: 12,
+					gap: 5,
 					minWidth: 0,
 				}}
 			>
@@ -171,21 +171,21 @@ const AppHeader = () => {
 					<Tag
 						style={{
 							margin: 0,
-							marginLeft: 24,
+							marginLeft: '1rem',
 							borderRadius: 999,
 							padding: '2px 10px',
 							fontSize: 12,
-							lineHeight: '16px',
+							lineHeight: '1rem',
 							maxWidth: 240,
 							textOverflow: 'ellipsis',
 							overflow: 'hidden',
 							whiteSpace: 'nowrap',
-							background: '#f65f4240',
+							background: '#f65f4230',
 							borderColor: 'transparent',
 							color: mode === 'dark' ? '#f65f42' : '#f65f42',
 						}}
 					>
-						{formatAddress(tenant?.address)}
+						{formatAddress(tenant?.name)}
 					</Tag>
 				)}
 			</div>

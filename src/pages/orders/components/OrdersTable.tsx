@@ -96,14 +96,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
 	// Define a type for payment configuration
 	type PaymentConfig = {
 		color:
-			| 'green'
-			| 'volcano'
-			| 'geekblue'
-			| 'orange'
-			| 'default'
-			| 'success'
-			| 'error'
-			| 'warning'; // Tag colors are more flexible
+		| 'green'
+		| 'volcano'
+		| 'geekblue'
+		| 'orange'
+		| 'default'
+		| 'success'
+		| 'error'
+		| 'warning'; // Tag colors are more flexible
 		text: string;
 	};
 
@@ -138,6 +138,23 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
 					<Text type="secondary" style={{ fontSize: 12 }}>
 						{toDateTime(record.createdAt)}
 					</Text>
+				</Flex>
+			),
+		},
+		{
+			title: 'Tenant',
+			dataIndex: 'tenantId',
+			key: 'tenantId',
+			width: 50,
+			// sorter: true,
+			render: (id: string) => (
+				<Flex vertical gap={4}>
+					<Text strong ellipsis style={{ width: 80 }}>
+						{id}
+					</Text>
+					{/* <Text type="secondary" style={{ fontSize: 12 }}>
+						{toDateTime(record.createdAt)}
+					</Text> */}
 				</Flex>
 			),
 		},

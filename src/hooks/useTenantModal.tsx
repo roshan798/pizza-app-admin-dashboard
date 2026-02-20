@@ -5,6 +5,7 @@ import { getTenantById } from '../http/Auth/tenants';
 import type { Tenant } from '../pages/tenants/types/types';
 
 export function useTenantModal() {
+	console.log('Initializing useTenantModal hook');
 	const [tenantId, setTenantId] = useState<string | null>(null);
 	const [open, setOpen] = useState(false);
 
@@ -37,5 +38,5 @@ export function useTenantModal() {
 		/>
 	);
 
-	return { openTenantModal, TenantModalElement } as const;
+	return { openTenantModal, TenantModalElement, tenant } as const;
 }
