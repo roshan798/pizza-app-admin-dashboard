@@ -96,14 +96,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
 	// Define a type for payment configuration
 	type PaymentConfig = {
 		color:
-		| 'green'
-		| 'volcano'
-		| 'geekblue'
-		| 'orange'
-		| 'default'
-		| 'success'
-		| 'error'
-		| 'warning'; // Tag colors are more flexible
+			| 'green'
+			| 'volcano'
+			| 'geekblue'
+			| 'orange'
+			| 'default'
+			| 'success'
+			| 'error'
+			| 'warning'; // Tag colors are more flexible
 		text: string;
 	};
 

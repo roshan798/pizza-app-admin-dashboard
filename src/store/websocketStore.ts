@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
 import { Socket, io } from 'socket.io-client';
 import type { Order } from '../http/Orders/order-types';
 import { Events, OrderEvents } from '../types/socketEvents';
 
+// TODO
+//
 interface WebSocketState {
 	socket: Socket | null;
 	isConnected: boolean;
@@ -43,11 +46,12 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 		}
 
 		// Create new socket connection for tenant
-		const wsUrl = 'http://localhost:8084'; //`${import.meta.env.VITE_WEBSOCKET_URL}`
-		console.log(
-			'🔌 [WebSocketStore] Creating new socket connection to:',
-			wsUrl
-		);
+		const wsUrl =
+			`${import.meta.env.VITE_WEBSOCKET_URL}` || 'http://localhost:8084';
+		// console.log(
+		// 	'[WebSocketStore] Creating new socket connection to:',
+		// 	wsUrl
+		// );
 
 		const newSocket = io(wsUrl, {
 			transports: ['websocket'],
@@ -59,19 +63,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 			timeout: 20000,
 		});
 
-		console.log('🔌 [WebSocketStore] Socket instance created');
-
-		// Connection events
 		newSocket.on(Events.CONNECT, () => {
-			console.log(
-				'✅ [WebSocketStore] CONNECTED for tenant:',
-				tenantId,
-				'Socket ID:',
-				newSocket.id
-			);
-			console.log(
-				'✅ [WebSocketStore] Connection successful, emitting join-room...'
-			);
 			newSocket.emit(Events.JOIN, {
 				tenantId,
 			});
@@ -80,43 +72,43 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 
 		newSocket.on(Events.ERROR, (error) => {
 			console.error(
-				'❌ [WebSocketStore] CONNECT_ERROR:',
+				'[WebSocketStore] CONNECT_ERROR:',
 				error.message || error
 			);
-			console.error('❌ [WebSocketStore] Full error object:', error);
+			console.error('[WebSocketStore] Full error object:', error);
 		});
 
 		newSocket.on('disconnect', (reason) => {
-			console.log('🔌 [WebSocketStore] DISCONNECTED. Reason:', reason);
+			// console.log('[WebSocketStore] DISCONNECTED. Reason:', reason);
 			set({ isConnected: false });
 		});
 
 		newSocket.on('reconnect', (attemptNumber) => {
-			console.log(
-				'🔄 [WebSocketStore] RECONNECTED after',
-				attemptNumber,
-				'attempts'
-			);
+			// console.log(
+			// 	'🔄 [WebSocketStore] RECONNECTED after',
+			// 	attemptNumber,
+			// 	'attempts'
+			// );
 			set({ isConnected: true });
 		});
 
 		newSocket.on('reconnect_attempt', (attemptNumber) => {
-			console.log(
-				'🔄 [WebSocketStore] Reconnection attempt #',
-				attemptNumber
-			);
+			// console.log(
+			// 	'[WebSocketStore] Reconnection attempt #',
+			// 	attemptNumber
+			// );
 		});
 
 		newSocket.on('reconnect_error', (error) => {
 			console.error(
-				'❌ [WebSocketStore] RECONNECTION ERROR:',
+				'[WebSocketStore] RECONNECTION ERROR:',
 				error.message || error
 			);
 		});
 
 		newSocket.on('reconnect_failed', () => {
 			console.error(
-				'💥 [WebSocketStore] RECONNECTION FAILED - Max attempts reached'
+				'[WebSocketStore] RECONNECTION FAILED - Max attempts reached'
 			);
 			set({ isConnected: false });
 		});
@@ -129,20 +121,20 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 				const order = message.data;
 				if (message.event_type === OrderEvents.ORDER_CREATE) {
 					console.log(
-						'📦 [WebSocketStore] New order created:',
+						'[WebSocketStore] New order created:',
 						message.data.id
 					);
 				} else if (message.event_type === OrderEvents.ORDER_UPDATE) {
-					console.log(
-						'🔄 [WebSocketStore] Order updated:',
-						message.data.id
-					);
+					// console.log(
+					// 	'[WebSocketStore] Order updated:',
+					// 	message.data.id
+					// );
 					set((state) => {
 						const updatedOrders = state.orders.map((o) =>
 							o.id === order.id ? order : o
 						);
 						console.log(
-							'🔄 [WebSocketStore] Order updated in store. Found:',
+							'[WebSocketStore] Order updated in store. Found:',
 							updatedOrders.some((o) => o.id === order.id)
 						);
 						return { orders: updatedOrders };
@@ -151,38 +143,30 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 					message.event_type === OrderEvents.ORDER_STATUS_UPDATE
 				) {
 					console.log(
-						'📊 [WebSocketStore] Order status updated:',
+						'[WebSocketStore] Order status updated:',
 						message.data.id
 					);
 					set((state) => {
 						const updatedOrders = state.orders.map((o) =>
 							o.id === order.id ? order : o
 						);
-						console.log(
-							'📊 [WebSocketStore] Status updated for order:',
-							order.id
-						);
+						// console.log(
+						// 	'[WebSocketStore] Status updated for order:',
+						// 	order.id
+						// );
 						return { orders: updatedOrders };
 					});
 				}
 
-				console.log(
-					'📦 [WebSocketStore] Adding to orders array. Previous count:',
-					get().orders.length
-				);
 				set((state) => {
 					const newOrders = [message.data, ...state.orders];
-					console.log(
-						'📦 [WebSocketStore] New orders count:',
-						newOrders.length
-					);
 					return { orders: newOrders };
 				});
 			}
 		);
 
 		newSocket.on('orderUpdated', (order: Order) => {
-			console.log('🔄 [WebSocketStore] orderUpdated event received:', {
+			console.log('[WebSocketStore] orderUpdated event received:', {
 				orderId: order.id,
 				oldStatus: get().orders.find((o) => o.id === order.id)
 					?.orderStatus,
@@ -192,27 +176,27 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 				const updatedOrders = state.orders.map((o) =>
 					o.id === order.id ? order : o
 				);
-				console.log(
-					'🔄 [WebSocketStore] Order updated in store. Found:',
-					updatedOrders.some((o) => o.id === order.id)
-				);
+				// console.log(
+				// 	'[WebSocketStore] Order updated in store. Found:',
+				// 	updatedOrders.some((o) => o.id === order.id)
+				// );
 				return { orders: updatedOrders };
 			});
 		});
 
 		newSocket.on('orderStatusChanged', (order: Order) => {
-			console.log('📊 [WebSocketStore] orderStatusChanged event:', {
-				orderId: order.id,
-				tenantId: order.tenantId,
-				from: get().orders.find((o) => o.id === order.id)?.orderStatus,
-				to: order.orderStatus,
-			});
+			// console.log('[WebSocketStore] orderStatusChanged event:', {
+			// 	orderId: order.id,
+			// 	tenantId: order.tenantId,
+			// 	from: get().orders.find((o) => o.id === order.id)?.orderStatus,
+			// 	to: order.orderStatus,
+			// });
 			set((state) => {
 				const updatedOrders = state.orders.map((o) =>
 					o.id === order.id ? order : o
 				);
 				console.log(
-					'📊 [WebSocketStore] Status updated for order:',
+					'[WebSocketStore] Status updated for order:',
 					order.id
 				);
 				return { orders: updatedOrders };

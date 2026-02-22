@@ -9,7 +9,6 @@ import type { Order } from '../../http/Orders/order-types';
 import { useNotification } from '../../hooks/useNotification';
 import OrdersFilters from './components/OrdersFilters ';
 
-
 const Orders = () => {
 	const notify = useNotification();
 	const {
@@ -34,14 +33,13 @@ const Orders = () => {
 	// Track previous live orders for change detection
 	const prevLiveOrdersRef = useRef<Order[]>([]);
 
-	
 	useEffect(() => {
 		const prevOrders = prevLiveOrdersRef.current;
 		prevLiveOrdersRef.current = liveOrders;
 
 		// Check for NEW or UPDATED orders
 		liveOrders.forEach((liveOrder) => {
-			const prevOrder = prevOrders.find(o => o.id === liveOrder.id);
+			const prevOrder = prevOrders.find((o) => o.id === liveOrder.id);
 
 			// NEW order (not in previous list)
 			if (!prevOrder) {
@@ -53,7 +51,9 @@ const Orders = () => {
 
 			// STATUS CHANGED
 			if (prevOrder.orderStatus !== liveOrder.orderStatus) {
-				notify('info', `Order #${liveOrder.id.slice(-8)} Updated`,
+				notify(
+					'info',
+					`Order #${liveOrder.id.slice(-8)} Updated`,
 					`Status: ${prevOrder.orderStatus} → ${liveOrder.orderStatus}`
 				);
 			}
@@ -73,16 +73,26 @@ const Orders = () => {
 		if (!apiOrders?.length) return liveOrders;
 
 		// Pinned live orders (NEW/OFF-PAGE → TOP)
-		const pinnedLiveOrders = liveOrders.filter(liveOrder =>
-			!apiOrders.some(apiOrder => apiOrder.id === liveOrder.id)
+		const pinnedLiveOrders = liveOrders.filter(
+			(liveOrder) =>
+				!apiOrders.some((apiOrder) => apiOrder.id === liveOrder.id)
 		);
 
 		// Current page with live overlay
-		const pageOrders = apiOrders.map(apiOrder =>
-			liveOrders.find(live => live.id === apiOrder.id) || apiOrder
-		).filter(Boolean);
+		const pageOrders = apiOrders
+			.map(
+				(apiOrder) =>
+					liveOrders.find((live) => live.id === apiOrder.id) ||
+					apiOrder
+			)
+			.filter(Boolean);
 
-		console.log('📊 [Orders] Pinned:', pinnedLiveOrders.length, 'Page:', pageOrders.length);
+		console.log(
+			'📊 [Orders] Pinned:',
+			pinnedLiveOrders.length,
+			'Page:',
+			pageOrders.length
+		);
 		return [...pinnedLiveOrders, ...pageOrders];
 	}, [apiOrders, liveOrders]);
 
@@ -91,7 +101,10 @@ const Orders = () => {
 	// Sync API to WebSocket store
 	useEffect(() => {
 		if (apiOrders && apiOrders.length > 0) {
-			console.log('📊 [Orders] Syncing API orders to WebSocket store:', apiOrders.length);
+			console.log(
+				'📊 [Orders] Syncing API orders to WebSocket store:',
+				apiOrders.length
+			);
 			setOrders(apiOrders);
 		}
 	}, [apiOrders, setOrders]);
@@ -100,7 +113,7 @@ const Orders = () => {
 	const connectionStatus = (
 		<Alert
 			message={`Live Orders: ${isConnected ? '🟢 Connected' : '🔴 Offline'}`}
-			type={isConnected ? "success" : "warning"}
+			type={isConnected ? 'success' : 'warning'}
 			showIcon
 			style={{ marginBottom: 16 }}
 		/>
@@ -121,7 +134,11 @@ const Orders = () => {
 			/>
 
 			{isLoading ? (
-				<Spin size="large" tip="Loading orders..." style={{ display: 'block', margin: '100px auto' }} />
+				<Spin
+					size="large"
+					tip="Loading orders..."
+					style={{ display: 'block', margin: '100px auto' }}
+				/>
 			) : displayOrders.length ? (
 				<OrdersTable
 					orders={displayOrders}
