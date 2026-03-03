@@ -1,5 +1,6 @@
 const CONFIG = {
-	baseUrl: 'http://localhost:8000/api',
+	baseUrl:
+		`${import.meta.env.VITE_BACKEND_URL}` || 'http://localhost:8000/api',
 	auth: {
 		login: '/auth/auth/login',
 		signup: '/auth/auth/register',
