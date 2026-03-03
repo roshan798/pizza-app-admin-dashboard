@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
 import { Socket, io } from 'socket.io-client';
 import type { Order } from '../http/Orders/order-types';
@@ -78,26 +77,26 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 			console.error('[WebSocketStore] Full error object:', error);
 		});
 
-		newSocket.on('disconnect', (reason) => {
-			// console.log('[WebSocketStore] DISCONNECTED. Reason:', reason);
-			set({ isConnected: false });
-		});
+		// newSocket.on('disconnect', (reason) => {
+		// 	// console.log('[WebSocketStore] DISCONNECTED. Reason:', reason);
+		// 	set({ isConnected: false });
+		// });
 
-		newSocket.on('reconnect', (attemptNumber) => {
-			// console.log(
-			// 	'🔄 [WebSocketStore] RECONNECTED after',
-			// 	attemptNumber,
-			// 	'attempts'
-			// );
-			set({ isConnected: true });
-		});
+		// newSocket.on('reconnect', (attemptNumber) => {
+		// 	// console.log(
+		// 	// 	'🔄 [WebSocketStore] RECONNECTED after',
+		// 	// 	attemptNumber,
+		// 	// 	'attempts'
+		// 	// );
+		// 	set({ isConnected: true });
+		// });
 
-		newSocket.on('reconnect_attempt', (attemptNumber) => {
-			// console.log(
-			// 	'[WebSocketStore] Reconnection attempt #',
-			// 	attemptNumber
-			// );
-		});
+		// newSocket.on('reconnect_attempt', (attemptNumber) => {
+		// 	// console.log(
+		// 	// 	'[WebSocketStore] Reconnection attempt #',
+		// 	// 	attemptNumber
+		// 	// );
+		// });
 
 		newSocket.on('reconnect_error', (error) => {
 			console.error(
